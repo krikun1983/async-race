@@ -1,0 +1,36 @@
+.conrols {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 310px;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  padding-left: 10px;
+}
+
+.btn {
+  cursor: pointer;
+  padding: 6px 10px;
+  font-size: 12px;
+  background-color: #e0eeff;
+  font-weight: bold;
+  border-radius: 4px;
+  border: none;
+  border-bottom: 4px solid #16619c;
+  border-left: 2px solid #16619c;
+  text-transform: uppercase;
+
+  &:hover {
+    background-color: #deffac;
+    border-bottom: 4px solid #77c404;
+    border-left: 2px solid #77c404;
+  }
+}
+
+.btn-race {
+  padding: 6px 20px;
+}
+
+.btn-reset {
+  padding: 6px 20px;
+}

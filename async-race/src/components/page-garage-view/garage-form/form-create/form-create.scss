@@ -1,0 +1,36 @@
+.form-create {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  width: 300px;
+}
+
+.create-name {
+  width: 150px;
+  height: 25px;
+}
+
+.create-color {
+  width: 50px;
+  height: 25px;
+}
+
+.btn-create {
+  cursor: pointer;
+  padding: 6px 10px;
+  font-size: 12px;
+  background-color: #e0eeff;
+  font-weight: bold;
+  border-radius: 4px;
+  border: none;
+  border-bottom: 4px solid #16619c;
+  border-left: 2px solid #16619c;
+  text-transform: uppercase;
+
+  &:hover {
+    background-color: #deffac;
+    border-bottom: 4px solid #77c404;
+    border-left: 2px solid #77c404;
+  }
+}
