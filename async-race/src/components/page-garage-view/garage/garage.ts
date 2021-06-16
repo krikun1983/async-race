@@ -34,7 +34,7 @@ export class Garage extends BaseComponent {
   <!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
   <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
   xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-    viewBox="0 0 612.001 612.001" style="fill: ${color};" width="50" xml:space="preserve">
+    viewBox="0 0 612.001 612.001" style="fill: ${color};" width="40" xml:space="preserve">
   <g>
     <path d="M589.333,276.033c-11.234-3.756-89.378-20.834-89.378-20.834s-144.86-82.375-162.245-82.375s-136.639,
     0.053-136.639,0.053
@@ -58,20 +58,20 @@ export class Garage extends BaseComponent {
     id,
     name,
     color,
-    isEngeneStarted = true,
+    isEngeneStarted = false,
   }: GarageCar): string => `
     <div class="general-buttons">
-      <button class="button select-button" id="select-car-${id}">Select</button>
-      <button class="button remove-button" id="remove-car-${id}">Remove</button>
+      <button class="button select-button" id="select-car-${id}"></button>
+      <button class="button remove-button" id="remove-car-${id}"></button>
       <span class="car-name">${name}</span>
     </div>
     <div class="road">
       <div class="launch-pad">
         <div class="control-panel">
-          <button class="icon start-engine-button"
+          <button class="icon start-engine-button icon-enable"
           id="start-engine-car-${id}"
           ${isEngeneStarted ? 'disabled' : ''}>A</button>
-          <button class="icon stop-engine-button"
+          <button class="icon stop-engine-button icon-disable"
           id="stop-engine-car-${id}"
           ${isEngeneStarted ? 'disabled' : ''}>B</button>
         </div>
@@ -86,7 +86,7 @@ export class Garage extends BaseComponent {
   renderGarage = (): string => `
     <h2>Garage (${store.carsCount})</h2>
     <h3>Page #${store.carsPage}</h3>
-    <ul class="garage">
+    <ul class="garage__list">
       ${store.cars.map(car => `<li>${this.renderCar(car)}</li>`).join('')}
     </ul>
   `;

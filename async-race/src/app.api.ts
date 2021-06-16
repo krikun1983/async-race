@@ -15,6 +15,11 @@ export interface Cars {
   count: string | null;
 }
 
+export interface CarsBody {
+  name: string;
+  color: string;
+}
+
 export const getCars = async ({
   page = 1,
   limit = 7,
@@ -30,20 +35,21 @@ export const getCars = async ({
   };
 };
 
-// export const getCar = async (id: number) => {
-//   return (await fetch(`${garage}/${id}`)).json();
-// };
+export const getCar = async (id: number) => {
+  return (await fetch(`${garage}/${id}`)).json();
+};
 
-// export const createCar = async (body: BodyInit) =>
-//   (
-//     await fetch(garage, {
-//       method: 'POST',
-//       body: JSON.stringify(body),
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//     })
-//   ).json();
+export const createCar = async (body: CarsBody) => {
+  const response = await fetch(`${garage}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+  const car = await response.json();
+  return car;
+};
 
 // export const deleteCar = async (id: number) =>
 //   (await fetch(`${garage}/${id}`, { method: 'DELETE' })).json();

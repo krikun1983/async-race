@@ -13,3 +13,108 @@ h3 {
   line-height: 24px;
   font-weight: bold;
 }
+
+.garage__list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 50px;
+}
+
+.general-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.button {
+  font-size: 15px;
+  line-height: 15px;
+  letter-spacing: 0.25px;
+  cursor: pointer;
+  background: none;
+  border: 2px red solid;
+  border-radius: 8px;
+  margin-right: 10px;
+  height: 25px;
+  width: 25px;
+}
+
+.select-button {
+  color: green;
+  border-color: green;
+
+  &:after {
+    content: '✔';
+  }
+}
+
+.remove-button {
+  color: green;
+  border-color: green;
+  &:after {
+    content: '✘';
+  }
+}
+
+.garage__list li {
+  padding-top: 10px;
+}
+
+.car-name {
+  font-family: Roboto, Verdana, Geneva, sans-serif;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 18px;
+  letter-spacing: 0.25px;
+  color: #f7d61d;
+}
+
+.road {
+  display: flex;
+  border-bottom: 2px dashed snow;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.flag {
+  padding-right: 7%;
+  color: red;
+  font-size: 35px;
+}
+
+.launch-pad {
+  display: flex;
+}
+
+.control-panel {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  font-family: Roboto, Verdana, Geneva, sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 15px;
+  letter-spacing: 0.25px;
+  color: red;
+  cursor: pointer;
+  background: none;
+  border: 2px red solid;
+  border-radius: 8px;
+  margin-right: 10px;
+  height: 25px;
+  width: 25px;
+}
+
+.icon-enable {
+  color: #adff2f;
+  border-color: #adff2f;
+}
+
+.icon:disabled {
+  color: #555;
+  border-color: #555;
+  cursor: not-allowed;
+}

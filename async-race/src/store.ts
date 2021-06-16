@@ -1,12 +1,4 @@
 import { Car, getCars } from './app.api';
-// , getWinners
-// const { cars, carsCount } = function() {
-//   return new Promise(res => getCars(1).then({cars, carsCount}=>{и юзай здесь}));
-// }
-//
-// const { items: winners, count: winnersCount } = await getWinners({ page: 1 });
-
-// const responce = await getCars(1);
 
 type Store = {
   carsPage: number;
