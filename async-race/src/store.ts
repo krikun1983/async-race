@@ -7,6 +7,14 @@ type Store = {
   getCars: () => Promise<void>;
 };
 
+export type Animat = {
+  animation: { [key: number]: { id: number } };
+};
+
+export const animat: Animat = {
+  animation: {},
+};
+
 export const store: Store = {
   carsPage: 1,
   cars: [],

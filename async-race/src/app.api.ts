@@ -1,7 +1,7 @@
 const base = 'http://127.0.0.1:3000';
 
 const garage = `${base}/garage`;
-// const engine = `${base}/engine`;
+const engine = `${base}/engine`;
 // const winners = `${base}/winners`;
 
 export interface Car {
@@ -51,27 +51,27 @@ export const createCar = async (body: CarsBody) => {
   return car;
 };
 
-// export const deleteCar = async (id: number) =>
-//   (await fetch(`${garage}/${id}`, { method: 'DELETE' })).json();
+export const deleteCar = async (id: number) =>
+  (await fetch(`${garage}/${id}`, { method: 'DELETE' })).json();
 
-// export const updateCar = async (id: number, body: BodyInit) =>
-//   (
-//     await fetch(`${garage}/${id}`, {
-//       method: 'PUT',
-//       body: JSON.stringify(body),
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//     })
-//   ).json();
+export const updateCar = async (id: number, body: CarsBody) =>
+  (
+    await fetch(`${garage}/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+  ).json();
 
-// export const startEngine = async (id: number) =>
-//   (await fetch(`${engine}?id=${id}&status=started`)).json();
+export const startEngine = async (id: number) =>
+  (await fetch(`${engine}?id=${id}&status=started`)).json();
 
-// export const stopEngine = async (id: number) =>
-//   (await fetch(`${engine}?id=${id}&status=stopped`)).json();
+export const stopEngine = async (id: number) =>
+  (await fetch(`${engine}?id=${id}&status=stopped`)).json();
 
-// export const drive = async (id: number) => {
-//   const res = await fetch(`${engine}?id=${id}&status=drive`).catch();
-//   return res.status !== 200 ? { success: false } : { ...(await res.json()) };
-// };
+export const drive = async (id: number) => {
+  const res = await fetch(`${engine}?id=${id}&status=drive`).catch();
+  return res.status !== 200 ? { success: false } : { ...(await res.json()) };
+};

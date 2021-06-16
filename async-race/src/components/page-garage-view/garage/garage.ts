@@ -1,8 +1,11 @@
 import { BaseComponent } from '../../base-components';
 
 import {
+  drive,
   // getCar,
   getCars,
+  startEngine,
+  stopEngine,
   // createCar,
   // deleteCar,
   // updateCar,
@@ -13,7 +16,7 @@ import {
   // getWinner,
   // drive,
 } from '../../../app.api';
-import { store } from '../../../store';
+import { animat, store } from '../../../store';
 import './garage.scss';
 
 export interface GarageCar {
@@ -29,7 +32,7 @@ export class Garage extends BaseComponent {
     this.element.innerHTML = this.renderGarage();
   }
 
-  renderCarImage = (color: string): string => `
+  private renderCarImage = (color: string): string => `
     <?xml version="1.0" encoding="iso-8859-1"?>
   <!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
   <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
@@ -54,11 +57,11 @@ export class Garage extends BaseComponent {
       C498.515,390.714,482.747,406.48,463.367,406.48z"/>
   </g></svg>`;
 
-  renderCar = ({
+  private renderCar = ({
     id,
     name,
     color,
-    isEngeneStarted = false,
+    isEngeneStarted = true,
   }: GarageCar): string => `
     <div class="general-buttons">
       <button class="button select-button" id="select-car-${id}"></button>
@@ -69,8 +72,7 @@ export class Garage extends BaseComponent {
       <div class="launch-pad">
         <div class="control-panel">
           <button class="icon start-engine-button icon-enable"
-          id="start-engine-car-${id}"
-          ${isEngeneStarted ? 'disabled' : ''}>A</button>
+          id="start-engine-car-${id}">A</button>
           <button class="icon stop-engine-button icon-disable"
           id="stop-engine-car-${id}"
           ${isEngeneStarted ? 'disabled' : ''}>B</button>
@@ -83,11 +85,125 @@ export class Garage extends BaseComponent {
     </div>
   `;
 
-  renderGarage = (): string => `
+  private renderGarage = (): string => `
     <h2>Garage (${store.carsCount})</h2>
     <h3>Page #${store.carsPage}</h3>
     <ul class="garage__list">
       ${store.cars.map(car => `<li>${this.renderCar(car)}</li>`).join('')}
     </ul>
   `;
+
+  private getPositionAtCenter = (
+    element: HTMLElement,
+  ): { x: number; y: number } => {
+    const { top, left, width, height } = element.getBoundingClientRect();
+    return {
+      x: left + width / 2,
+      y: top + height / 2,
+    };
+  };
+
+  private getDistanceBetweenElements = (a: HTMLElement, b: HTMLElement) => {
+    const aPosition = this.getPositionAtCenter(a);
+    const bPosition = this.getPositionAtCenter(b);
+
+    return Math.hypot(aPosition.x - bPosition.x, aPosition.y - bPosition.y);
+  };
+
+  private animation = (
+    car: HTMLElement,
+    distance: number,
+    animationTime: number,
+  ): { id: number } => {
+    let start: number | null = null;
+    const state: {
+      id: number;
+    } = { id: 1 };
+
+    function step(timestamp: number) {
+      if (!start) start = timestamp;
+      const time = timestamp - start;
+      const passed = Math.round(time * (distance / animationTime));
+
+      car.style.transform = `translateX(${Math.min(passed, distance)}px)`;
+
+      if (passed < distance) {
+        state.id = window.requestAnimationFrame(step);
+      }
+    }
+    state.id = window.requestAnimationFrame(step);
+
+    return state;
+  };
+
+  private startDriving = async (id: number) => {
+    const startButton = document.getElementById(`start-engine-car-${id}`);
+    startButton?.setAttribute('disabled', '');
+    startButton?.classList.toggle('enabling', true);
+
+    const { velocity, distance } = await startEngine(id);
+    const time = Math.round(distance / velocity);
+
+    startButton?.classList.toggle('enabling', false);
+    const stopButton = document.getElementById(`stop-engine-car-${id}`);
+    stopButton?.removeAttribute('disabled');
+
+    const car = document.getElementById(`car-${id}`);
+    const flag = document.getElementById(`flag-${id}`);
+    if (car && flag) {
+      const htmlDistance =
+        Math.floor(this.getDistanceBetweenElements(car, flag)) + 10;
+      animat.animation[id] = this.animation(car, htmlDistance, time);
+    }
+
+    const { success } = await drive(id);
+    if (!success) window.cancelAnimationFrame(animat.animation[id].id);
+
+    return { success, id, time };
+  };
+
+  private stopDriving = async (id: number) => {
+    const stopButton = document.getElementById(`stop-engine-car-${id}`);
+    stopButton?.setAttribute('disabled', '');
+    stopButton?.classList.toggle('enabling', true);
+    await stopEngine(id);
+    stopButton?.classList.toggle('enabling', false);
+    document
+      .getElementById(`start-engine-car-${id}`)
+      ?.removeAttribute('disabled');
+
+    const car = document.getElementById(`car-${id}`);
+    if (car) {
+      car.style.transform = 'translateX(0)';
+    }
+
+    if (animat.animation[id])
+      window.cancelAnimationFrame(animat.animation[id].id);
+  };
+
+  listen(): void {
+    document.body.addEventListener(
+      'click',
+      async (event: Event): Promise<void> => {
+        if (
+          (event.target as HTMLElement).classList.contains(
+            'start-engine-button',
+          )
+        ) {
+          const id = +(event.target as HTMLElement).id.split(
+            'start-engine-car-',
+          )[1];
+          this.startDriving(id);
+        }
+        if (
+          (event.target as HTMLElement).classList.contains('stop-engine-button')
+        ) {
+          const id = +(event.target as HTMLElement).id.split(
+            'stop-engine-car-',
+          )[1];
+          this.stopDriving(id);
+        }
+      },
+    );
+  }
 }
