@@ -1,5 +1,11 @@
 import { App } from './app';
+import { store } from './store';
 import './style.scss';
 
 const { body } = document;
-new App(body).render();
+
+window.onload = () => {
+  store.getCars().then(() => {
+    new App(body).render();
+  });
+};
