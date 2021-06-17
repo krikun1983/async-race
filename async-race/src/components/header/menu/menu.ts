@@ -15,7 +15,7 @@ export class Menu extends BaseComponent {
       'btn-menu-active',
     ]);
     button.element.innerHTML = 'to garage';
-    button.element.setAttribute('data-id', 'garage-view');
+    button.element.setAttribute('id', 'garage-view');
     return button.element;
   }
 
@@ -25,7 +25,7 @@ export class Menu extends BaseComponent {
       'btn-menu-navigate',
     ]);
     button.element.innerHTML = 'to winners';
-    button.element.setAttribute('data-id', 'winners-view');
+    button.element.setAttribute('id', 'winners-view');
     return button.element;
   }
 }

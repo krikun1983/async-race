@@ -8,10 +8,6 @@ const { body } = document;
 window.onload = () => {
   store.getCars().then(() => {
     new App(body).render();
-    new Garage().renderGarage();
+    new Garage().listen();
   });
-  // .then(() => {
-  //   new Garage().renderGarage();
-  // });
 };
-new Garage().listen();

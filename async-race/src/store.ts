@@ -1,10 +1,11 @@
-import { Car, getCars } from './app.api';
+import { Car, deleteCar, getCars } from './app.api';
 
 type Store = {
   carsPage: number;
   cars: Car[];
   carsCount: string | null;
   getCars: () => Promise<void>;
+  deleteCar: (id: number) => Promise<void>;
 };
 
 export type Animat = {
@@ -23,5 +24,9 @@ export const store: Store = {
     const { items, count } = await getCars({ page: this.carsPage });
     this.cars = items;
     this.carsCount = count;
+  },
+  async deleteCar(id: number) {
+    await deleteCar(id);
+    await this.getCars();
   },
 };

@@ -35,7 +35,7 @@ export class Garage extends BaseComponent {
     this.garagePartUpdate = new GaragePartUpdate();
     this.garageButtonsNextPrev = new GarageButtonsNextPrev();
     this.element.appendChild(this.garagePartUpdate.element);
-    this.garagePartUpdate.element.innerHTML = this.renderGarage();
+    this.element.innerHTML = this.renderGarage();
     this.garagePartUpdate.element.setAttribute('id', 'garage');
     this.element.appendChild(this.garageButtonsNextPrev.element);
   }
@@ -93,11 +93,13 @@ export class Garage extends BaseComponent {
     </div>
   `;
 
-  renderGarage = (): string => `
+  renderGarage = () => `
     <h2>Garage (${store.carsCount})</h2>
     <h3>Page #${store.carsPage}</h3>
     <ul class="garage__list">
-      ${store.cars.map(car => `<li>${this.renderCar(car)}</li>`).join('')}
+      ${store.cars
+        .map(car => `<li id='carDel-${car.id}'>${this.renderCar(car)}</li>`)
+        .join('')}
     </ul>
   `;
 
@@ -270,21 +272,10 @@ export class Garage extends BaseComponent {
         }
         if ((event.target as HTMLElement).classList.contains('remove-button')) {
           const id = +(event.target as HTMLElement).id.split('remove-car-')[1];
-          await deleteCar(id);
-          // await deleteWinner(id);
-          // await this.updateStateGarage();
-          // await getCars(1);
-          // Garage.deleteDiv();
-          // window.onload = () => {
-          //   store.getCars();
-          //   this.element.innerHTML = this.renderGarage();
-          // };
-
-          // this.element.innerHTML = this.renderGarage();
-          // this.element.appendChild(this.garagePartUpdate.element);
-          // if (garage) {
-          //   garage.innerHTML = this.renderGarage();
-          // }
+          this.element.innerHTML = '';
+          await store.deleteCar(id);
+          (document.querySelector('.garage') as HTMLDivElement).innerHTML =
+            this.renderGarage();
         }
         if ((event.target as HTMLElement).classList.contains('btn-race')) {
           (event.target as HTMLElement).setAttribute('disabled', '');
@@ -305,5 +296,9 @@ export class Garage extends BaseComponent {
         }
       },
     );
+  }
+
+  render() {
+    return this.element;
   }
 }
