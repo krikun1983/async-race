@@ -25,21 +25,3 @@ export const store: Store = {
     this.carsCount = count;
   },
 };
-
-// const cars = getСarsItem();
-// const carsCount = getСarsCount();
-
-// console.log('items cars => ', responce);
-
-// export default {
-//   carsPage: 1,
-//   cars,
-//   carsCount,
-//   winnersPage: 1,
-// winners,
-// winnersCount,
-// animation: {},
-// view: 'garage',
-// sortBy: null,
-// sortOrder: null,
-// };

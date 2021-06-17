@@ -1,23 +1,22 @@
 import { BaseComponent } from '../../base-components';
 
 import {
+  deleteCar,
   drive,
   // getCar,
   getCars,
   startEngine,
   stopEngine,
   // createCar,
-  // deleteCar,
   // updateCar,
-  // startEngine,
-  // stopEngine,
   // saveWinner,
   // getWinners,
   // getWinner,
-  // drive,
 } from '../../../app.api';
 import { animat, store } from '../../../store';
 import './garage.scss';
+import { GaragePartUpdate } from './garagePartUpdate';
+import { GarageButtonsNextPrev } from './garageButtonsNextPrev/garageButtonsNextPrev';
 
 export interface GarageCar {
   id: number;
@@ -27,9 +26,18 @@ export interface GarageCar {
 }
 
 export class Garage extends BaseComponent {
+  private readonly garagePartUpdate: GaragePartUpdate;
+
+  private readonly garageButtonsNextPrev: GarageButtonsNextPrev;
+
   constructor() {
     super('div', ['garage']);
-    this.element.innerHTML = this.renderGarage();
+    this.garagePartUpdate = new GaragePartUpdate();
+    this.garageButtonsNextPrev = new GarageButtonsNextPrev();
+    this.element.appendChild(this.garagePartUpdate.element);
+    this.garagePartUpdate.element.innerHTML = this.renderGarage();
+    this.garagePartUpdate.element.setAttribute('id', 'garage');
+    this.element.appendChild(this.garageButtonsNextPrev.element);
   }
 
   private renderCarImage = (color: string): string => `
@@ -85,7 +93,7 @@ export class Garage extends BaseComponent {
     </div>
   `;
 
-  private renderGarage = (): string => `
+  renderGarage = (): string => `
     <h2>Garage (${store.carsCount})</h2>
     <h3>Page #${store.carsPage}</h3>
     <ul class="garage__list">
@@ -181,6 +189,63 @@ export class Garage extends BaseComponent {
       window.cancelAnimationFrame(animat.animation[id].id);
   };
 
+  updateStateGarage = async (): Promise<void> => {
+    if (store.carsPage * 7 < Number(store.carsCount)) {
+      document.getElementById('button-next')?.removeAttribute('disabled');
+    } else {
+      document.getElementById('button-next')?.setAttribute('disabled', '');
+    }
+    if (store.carsPage > 1) {
+      document.getElementById('button-prev')?.removeAttribute('disabled');
+    } else {
+      document.getElementById('button-prev')?.setAttribute('disabled', '');
+    }
+  };
+
+  static deleteDiv(): void {
+    const garage = document.querySelector('.garage-part-update');
+    if (garage) {
+      garage.remove();
+    }
+  }
+
+  // temp() {
+  //   const promises = store.cars.map(({ id }) => this.startDriving(id));
+  // }
+
+  // raceAll = async (promises, ids) => {
+  //   const { success, id, time } = await Promise.race(promises);
+
+  //   if (!success) {
+  //     const failedIndex = ids.fineIndex(i => i === id);
+  //     const restPromises = [
+  //       ...promises.slice(0, failedIndex),
+  //       ...promises.slice(failedIndex + 1, promises.length),
+  //     ];
+  //     const restIds = [
+  //       ...ids.slice(0, failedIndex),
+  //       ...ids.slice(failedIndex + 1, ids.length),
+  //     ];
+  //     return raceAll(restPromises, restIds);
+  //   }
+
+  //   return {
+  //     ...store.cars.find(car => car.id === id),
+  //     time: +(time / 1000).toFixed(2),
+  //   };
+  // };
+
+  // race = async action => {
+  //   const promises = store.cars.map(({ id }) => action(id));
+
+  //   const winner = await raceAll(
+  //     promises,
+  //     store.cars.map(car => car.id),
+  //   );
+
+  //   return winner;
+  // };
+
   listen(): void {
     document.body.addEventListener(
       'click',
@@ -202,6 +267,41 @@ export class Garage extends BaseComponent {
             'stop-engine-car-',
           )[1];
           this.stopDriving(id);
+        }
+        if ((event.target as HTMLElement).classList.contains('remove-button')) {
+          const id = +(event.target as HTMLElement).id.split('remove-car-')[1];
+          await deleteCar(id);
+          // await deleteWinner(id);
+          // await this.updateStateGarage();
+          // await getCars(1);
+          // Garage.deleteDiv();
+          // window.onload = () => {
+          //   store.getCars();
+          //   this.element.innerHTML = this.renderGarage();
+          // };
+
+          // this.element.innerHTML = this.renderGarage();
+          // this.element.appendChild(this.garagePartUpdate.element);
+          // if (garage) {
+          //   garage.innerHTML = this.renderGarage();
+          // }
+        }
+        if ((event.target as HTMLElement).classList.contains('btn-race')) {
+          (event.target as HTMLElement).setAttribute('disabled', '');
+          store.cars.map(({ id }) => this.startDriving(id));
+          // const winner = await race(startDriving);
+          // await saveWinner(winner);
+          // const message = document.getElementById('message');
+          // message.innerHTML = `${winner.name} went first (${winner.time}s)!`;
+          // message.classList.toggle('visible', true);
+          // document.getElementById('reset').disabled = false;
+        }
+        if ((event.target as HTMLElement).classList.contains('btn-reset')) {
+          (event.target as HTMLElement).setAttribute('disabled', '');
+          store.cars.map(({ id }) => this.stopDriving(id));
+          // const message = document.getElementById('message');
+          // message.classList.toggle('visible', false);
+          document.getElementById('btn-race')?.removeAttribute('disabled');
         }
       },
     );

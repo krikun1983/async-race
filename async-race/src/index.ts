@@ -6,12 +6,12 @@ import './style.scss';
 const { body } = document;
 
 window.onload = () => {
-  store
-    .getCars()
-    .then(() => {
-      new App(body).render();
-    })
-    .then(() => {
-      new Garage().listen();
-    });
+  store.getCars().then(() => {
+    new App(body).render();
+    new Garage().renderGarage();
+  });
+  // .then(() => {
+  //   new Garage().renderGarage();
+  // });
 };
+new Garage().listen();
