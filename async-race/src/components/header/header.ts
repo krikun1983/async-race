@@ -1,6 +1,7 @@
 import { BaseComponent } from '../base-components';
 import { Menu } from './menu/menu';
 import './header.scss';
+import { store } from '../../store';
 
 export class Header extends BaseComponent {
   private readonly menu: Menu;
@@ -29,12 +30,14 @@ export class Header extends BaseComponent {
         btnPageWinners.classList.remove('btn-menu-active');
         PageGarage?.classList.remove('hidden');
         PageWinners?.classList.add('hidden');
+        store.view = 'garage';
       });
       btnPageWinners.addEventListener('click', () => {
         btnPageGarage.classList.remove('btn-menu-active');
         btnPageWinners.classList.add('btn-menu-active');
         PageGarage?.classList.add('hidden');
         PageWinners?.classList.remove('hidden');
+        store.view = 'winners';
       });
     }
   }

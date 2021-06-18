@@ -49,7 +49,6 @@ export class WinnersView extends BaseComponent {
         id="sort-by-time">Best time (seconds)</th>
       </thead>
       <tbody>
-      ${store.winners.map(winner => console.log(winner))}
         ${store.winners
           .map(
             (winner, index) => `
@@ -67,6 +66,20 @@ export class WinnersView extends BaseComponent {
     </table>
   `;
 
+  updateStateWinners = async (): Promise<void> => {
+    await store.getWinners();
+    if (store.winnersPage * 10 < Number(store.winnersCount)) {
+      document.querySelector('.button-next')?.removeAttribute('disabled');
+    } else {
+      document.querySelector('.button-next')?.setAttribute('disabled', '');
+    }
+    if (store.winnersPage > 1) {
+      document.querySelector('.button-prev')?.removeAttribute('disabled');
+    } else {
+      document.querySelector('.button-prev')?.setAttribute('disabled', '');
+    }
+  };
+
   renders(): void {
     document.body.addEventListener(
       'click',
@@ -80,6 +93,37 @@ export class WinnersView extends BaseComponent {
           // await store.getWinners();
           (document.querySelector('.winners') as HTMLElement).innerHTML =
             this.renderWinners();
+        }
+
+        if (
+          (event.target as HTMLButtonElement).classList.contains('button-next')
+        ) {
+          switch (store.view) {
+            case 'winners': {
+              this.element.innerHTML = '';
+              store.winnersPage += 1;
+              await this.updateStateWinners();
+              (document.querySelector('.winners') as HTMLElement).innerHTML =
+                this.renderWinners();
+              break;
+            }
+            default:
+          }
+        }
+        if (
+          (event.target as HTMLButtonElement).classList.contains('button-prev')
+        ) {
+          switch (store.view) {
+            case 'winners': {
+              this.element.innerHTML = '';
+              store.winnersPage -= 1;
+              await this.updateStateWinners();
+              (document.querySelector('.winners') as HTMLElement).innerHTML =
+                this.renderWinners();
+              break;
+            }
+            default:
+          }
         }
       },
     );

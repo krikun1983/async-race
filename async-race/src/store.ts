@@ -2,13 +2,17 @@ import {
   Car,
   CarsBody,
   createCar,
+  createWinner,
   deleteCar,
   deleteWinner,
   getCars,
   getWinners,
+  getWinnerStatus,
   saveWinner,
   updateCar,
+  updateWinner,
   Winner,
+  WinnerBody,
 } from './app.api';
 
 type Store = {
@@ -23,10 +27,13 @@ type Store = {
   createCar(body: CarsBody): Promise<void>;
   updateCar: (id: number, body: CarsBody) => Promise<void>;
   getWinners: () => Promise<void>;
+  getWinnerStatus: (id: number) => Promise<void>;
   deleteWinner: (id: number) => Promise<void>;
+  createWinner: (body: WinnerBody) => Promise<void>;
+  updateWinner: (id: number, body: WinnerBody) => Promise<void>;
   sortBy: null;
   sortOrder: null;
-  view: 'garage';
+  view: string;
 };
 
 export type Animat = {
@@ -66,13 +73,22 @@ export const store: Store = {
     this.winners = items;
     this.winnersCount = count;
   },
+  async getWinnerStatus(id: number) {
+    await getWinnerStatus(id);
+    await this.getWinners();
+  },
   async deleteWinner(id: number) {
     await deleteWinner(id);
     await this.getWinners();
   },
-  // async saveWinner() {
-  //   await saveWinner({ id, time });
-  // },
+  async createWinner(body: WinnerBody) {
+    await createWinner(body);
+    await this.getWinners();
+  },
+  async updateWinner(id: number, body: WinnerBody) {
+    await updateWinner(id, body);
+    await this.getWinners();
+  },
   sortBy: null,
   sortOrder: null,
   view: 'garage',

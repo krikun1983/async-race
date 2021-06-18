@@ -7,6 +7,9 @@ import {
   getCar,
   // getCar,
   getCars,
+  getWinner,
+  getWinnerStatus,
+  saveWinner,
   startEngine,
   stopEngine,
   updateCar,
@@ -213,44 +216,26 @@ export class Garage extends BaseComponent {
     }
   };
 
+  updateStateWinners = async (): Promise<void> => {
+    await store.getWinners();
+    if (store.winnersPage * 10 < Number(store.winnersCount)) {
+      document.querySelector('.button-next')?.removeAttribute('disabled');
+    } else {
+      document.querySelector('.button-next')?.setAttribute('disabled', '');
+    }
+    if (store.winnersPage > 1) {
+      document.querySelector('.button-prev')?.removeAttribute('disabled');
+    } else {
+      document.querySelector('.button-prev')?.setAttribute('disabled', '');
+    }
+  };
+
   static deleteDiv(): void {
     const garage = document.querySelector('.garage-part-update');
     if (garage) {
       garage.remove();
     }
   }
-
-  // raceAll = async (promises, ids) => {
-  //   const { success, id, time } = await Promise.race(promises);
-
-  //   if (!success) {
-  //     const failedIndex = ids.fineIndex(i => i === id);
-  //     const restPromises = [
-  //       ...promises.slice(0, failedIndex),
-  //       ...promises.slice(failedIndex + 1, promises.length),
-  //     ];
-  //     const restIds = [
-  //       ...ids.slice(0, failedIndex),
-  //       ...ids.slice(failedIndex + 1, ids.length),
-  //     ];
-  //     return this.raceAll(restPromises, restIds);
-  //   }
-
-  //   return {
-  //     ...store.cars.find(car => car.id === id),
-  //     time: +(time / 1000).toFixed(2),
-  //   };
-  // };
-
-  // race = async action => {
-  //   const promises = store.cars.map(({ id }) => action(id));
-
-  //   const winner = await this.raceAll(
-  //     promises,
-  //     store.cars.map(car => car.id),
-  //   );
-  //   return winner;
-  // };
 
   listen(): void {
     document.body.addEventListener(
@@ -302,6 +287,27 @@ export class Garage extends BaseComponent {
             this.renderGarage();
         }
 
+        if (
+          (event.target as HTMLElement).classList.contains('btn-winners-view')
+        ) {
+          store.cars.map(({ id }) => this.stopDriving(id));
+          (document.querySelector('.btn-reset') as HTMLButtonElement).disabled =
+            true;
+          (
+            document.querySelector('.btn-generate') as HTMLButtonElement
+          ).disabled = false;
+          (
+            document.querySelector('.btn-create') as HTMLButtonElement
+          ).disabled = false;
+          (document.querySelector('.result') as HTMLDivElement).innerHTML = '';
+          (
+            document.querySelector('.btn-race') as HTMLButtonElement
+          ).removeAttribute('disabled');
+          (
+            document.querySelector('.button-next') as HTMLButtonElement
+          ).removeAttribute('disabled');
+        }
+
         if ((event.target as HTMLElement).classList.contains('btn-race')) {
           (event.target as HTMLElement).setAttribute('disabled', '');
           (
@@ -331,9 +337,10 @@ export class Garage extends BaseComponent {
           const time = +(resultMin / 1000).toFixed(2);
 
           const winnerSave = {
-            id: winner?.id,
-            name: winner?.name,
-            color: winner?.color,
+            id: winner!.id,
+            // name: winner?.name,
+            // color: winner?.color,
+            wins: 1,
             time,
           };
 
@@ -341,16 +348,33 @@ export class Garage extends BaseComponent {
           const resultRase = document.querySelector('.result');
           (
             resultRase as HTMLDivElement
-          ).innerHTML = `Победил <span>${winnerSave.name}</span>. Его время <span>${winnerSave.time}</span> сек`;
+          ).innerHTML = `Победил <span>${winner?.name}</span>. Его время <span>${winnerSave.time}</span> сек`;
           // console.log(result);
           // const { success, id, time } = await Promise.race(promises);
           // console.log(success, id, time);
           // const winner = await this.race(this.startDriving);
           // console.log(winner);
-          // await saveWinner(winner);
-          // const message = document.getElementById('message');
-          // message.innerHTML = `${winner.name} went first (${winner.time}s)!`;
-          // message.classList.toggle('visible', true);
+          const winnerStatus = await getWinnerStatus(winnerSave.id);
+          if (winnerStatus === 404) {
+            await store.createWinner(winnerSave);
+          } else {
+            const winnerUpdate = await getWinner(winnerSave.id);
+            await store.updateWinner(winnerSave.id, {
+              id: winnerSave.id,
+              wins: winnerUpdate.wins + 1,
+              time: time < winnerUpdate.time ? time : winnerUpdate.time,
+            });
+          }
+          await this.updateStateGarage();
+          await this.updateStateWinners();
+          (
+            document.querySelector('.button-next') as HTMLButtonElement
+          ).removeAttribute('disabled');
+          if (store.carsPage > 1) {
+            (
+              document.querySelector('.button-prev') as HTMLButtonElement
+            ).removeAttribute('disabled');
+          }
         }
         if ((event.target as HTMLElement).classList.contains('btn-reset')) {
           (event.target as HTMLElement).setAttribute('disabled', '');
@@ -440,10 +464,11 @@ export class Garage extends BaseComponent {
               break;
             }
             // case 'winners': {
-            // store.winnersPage += 1;
-            // await updateStateWinners();
-            // document.getElementById('winners-view').innerHTML = renderWinners();
-            // break;
+            //   store.winnersPage += 1;
+            //   await this.updateStateWinners();
+            //   document.getElementById('winners-view').innerHTML =
+            //     renderWinners();
+            //   break;
             // }
             default:
           }
