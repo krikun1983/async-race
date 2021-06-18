@@ -23,6 +23,7 @@ export class Menu extends BaseComponent {
     const button = new BaseComponent('button', [
       'btn-menu',
       'btn-menu-navigate',
+      'btn-winners-view',
     ]);
     button.element.innerHTML = 'to winners';
     button.element.setAttribute('id', 'winners-view');

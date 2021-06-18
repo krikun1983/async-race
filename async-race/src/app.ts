@@ -19,10 +19,10 @@ export class App {
     this.pageWinnersView = new PageWinnersView();
     this.rootElement.appendChild(this.header.element);
     this.rootElement.innerHTML += `<div class="help">Огромная просьба проверить
-    через 2 дня, если не сложно. Нахожуь в процессе заполнения!!!
+    через 1 день, если не сложно. Нахожусь в процессе заполнения!!!
     Ну или оставьте свои координаты. Заранее спасибо)))</div>`;
     this.rootElement.appendChild(this.pageGarageView.element);
-    this.rootElement.appendChild(this.pageWinnersView.element);
+    this.rootElement.appendChild(this.pageWinnersView.render());
     this.rootElement.appendChild(this.garageButtonsNextPrev.element);
     Header.pageHidden();
   }

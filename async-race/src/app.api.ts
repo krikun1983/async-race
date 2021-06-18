@@ -5,6 +5,7 @@ const engine = `${base}/engine`;
 const winners = `${base}/winners`;
 
 export interface Winner {
+  car: { name: string; color: string; id: number };
   id: number;
   wins: number;
   time: number;
@@ -16,7 +17,7 @@ export interface Winners {
 }
 
 export interface WinnerBody {
-  id?: number;
+  id: number;
   wins: number;
   time: number;
 }
@@ -136,7 +137,7 @@ export const getWinnerStatus = async (id: number) =>
 export const deleteWinner = async (id: number) =>
   (await fetch(`${winners}/${id}`, { method: 'DELETE' })).json();
 
-export const createWinner = async (body: Winner) =>
+export const createWinner = async (body: WinnerBody) =>
   (
     await fetch(winners, {
       method: 'POST',

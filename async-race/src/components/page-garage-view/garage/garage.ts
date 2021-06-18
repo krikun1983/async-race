@@ -19,6 +19,7 @@ import {
 import { animat, store } from '../../../store';
 import './garage.scss';
 import { GaragePartUpdate } from './garagePartUpdate';
+import { WinnersView } from '../../page-winners-view/winners/winners';
 
 export interface GarageCar {
   id: number;
@@ -38,10 +39,13 @@ let selectedCar: { name: string; color: string; id: number } | null = null;
 export class Garage extends BaseComponent {
   private readonly garagePartUpdate: GaragePartUpdate;
 
+  private readonly winnersView: WinnersView;
+
   constructor() {
     super('div', ['garage']);
     this.garagePartUpdate = new GaragePartUpdate();
     this.element.appendChild(this.garagePartUpdate.element);
+    this.winnersView = new WinnersView();
     this.element.innerHTML = this.renderGarage();
     this.garagePartUpdate.element.setAttribute('id', 'garage');
   }
@@ -297,6 +301,7 @@ export class Garage extends BaseComponent {
           (document.querySelector('.garage') as HTMLDivElement).innerHTML =
             this.renderGarage();
         }
+
         if ((event.target as HTMLElement).classList.contains('btn-race')) {
           (event.target as HTMLElement).setAttribute('disabled', '');
           (
@@ -322,11 +327,21 @@ export class Garage extends BaseComponent {
           });
 
           const winner = store.cars.find(car => car.id === carWinner);
+
           const time = +(resultMin / 1000).toFixed(2);
+
+          const winnerSave = {
+            id: winner?.id,
+            name: winner?.name,
+            color: winner?.color,
+            time,
+          };
+
+          // console.log(winnerSave);
           const resultRase = document.querySelector('.result');
           (
             resultRase as HTMLDivElement
-          ).innerHTML = `Победил <span>${winner?.name}</span>. Его время <span>${time}</span> сек`;
+          ).innerHTML = `Победил <span>${winnerSave.name}</span>. Его время <span>${winnerSave.time}</span> сек`;
           // console.log(result);
           // const { success, id, time } = await Promise.race(promises);
           // console.log(success, id, time);
@@ -339,7 +354,8 @@ export class Garage extends BaseComponent {
         }
         if ((event.target as HTMLElement).classList.contains('btn-reset')) {
           (event.target as HTMLElement).setAttribute('disabled', '');
-          (document.querySelector('.result') as HTMLDivElement).innerHTML = '';
+          (document.querySelector('.result') as HTMLDivElement).innerHTML =
+            'Привет';
           store.cars.map(({ id }) => this.stopDriving(id));
           (
             document.querySelector('.btn-generate') as HTMLButtonElement

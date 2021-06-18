@@ -6,6 +6,7 @@ import {
   deleteWinner,
   getCars,
   getWinners,
+  saveWinner,
   updateCar,
   Winner,
 } from './app.api';
@@ -69,6 +70,9 @@ export const store: Store = {
     await deleteWinner(id);
     await this.getWinners();
   },
+  // async saveWinner() {
+  //   await saveWinner({ id, time });
+  // },
   sortBy: null,
   sortOrder: null,
   view: 'garage',
