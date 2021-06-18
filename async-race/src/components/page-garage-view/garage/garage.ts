@@ -38,16 +38,12 @@ let selectedCar: { name: string; color: string; id: number } | null = null;
 export class Garage extends BaseComponent {
   private readonly garagePartUpdate: GaragePartUpdate;
 
-  private readonly garageButtonsNextPrev: GarageButtonsNextPrev;
-
   constructor() {
     super('div', ['garage']);
     this.garagePartUpdate = new GaragePartUpdate();
-    this.garageButtonsNextPrev = new GarageButtonsNextPrev();
     this.element.appendChild(this.garagePartUpdate.element);
     this.element.innerHTML = this.renderGarage();
     this.garagePartUpdate.element.setAttribute('id', 'garage');
-    this.element.appendChild(this.garageButtonsNextPrev.element);
   }
 
   private renderCarImage = (color: string): string => `
@@ -322,23 +318,23 @@ export class Garage extends BaseComponent {
         }
         if ((event.target as HTMLElement).classList.contains('btn-update')) {
           // event.preventDefault();
-          const updateText = document.getElementById(
+          const updateName = document.getElementById(
             'update-name',
           ) as HTMLInputElement;
           const updateColor = document.getElementById(
             'update-color',
           ) as HTMLInputElement;
-          if (updateText.value && updateColor.value) {
+          if (updateName.value && updateColor.value) {
             const car = {
-              name: updateText.value,
+              name: updateName.value,
               color: updateColor.value,
             };
             this.element.innerHTML = '';
             await store.updateCar(selectedCar!.id, car);
             (document.querySelector('.garage') as HTMLDivElement).innerHTML =
               this.renderGarage();
-            updateText.value = '';
-            updateText.disabled = true;
+            updateName.value = '';
+            updateName.disabled = true;
             updateColor.disabled = true;
             (
               document.getElementById('update-submit') as HTMLButtonElement
@@ -346,37 +342,44 @@ export class Garage extends BaseComponent {
             updateColor.value = '#ffffff';
             selectedCar = null;
           }
-          // const car = Object.fromEntries(
-          //   new Map(
-          //     [...(event.target as HTMLElement)]
-          //       .filter(({ name }) => !!name)
-          //       .map(({ value, name }) => [name, value]),
-          //   ),
-          // );
         }
+        if ((event.target as HTMLElement).classList.contains('btn-create')) {
+          const createName = document.querySelector(
+            '.create-name',
+          ) as HTMLInputElement;
+          const createColor = document.querySelector(
+            '.create-color',
+          ) as HTMLInputElement;
+          const car = {
+            name: createName.value,
+            color: createColor.value,
+          };
+          this.element.innerHTML = '';
+          await store.createCar(car);
+          (document.querySelector('.garage') as HTMLDivElement).innerHTML =
+            this.renderGarage();
+          createName.value = '';
+          createColor.value = '';
+        }
+        // document
+        //   .getElementById('create')
+        //   .addEventListener('submit', async event => {
+        //     event.preventDefault();
+        //     const car = Object.fromEntries(
+        //       new Map(
+        //         [...event.target]
+        //           .filter(({ name }) => !!name)
+        //           .map(({ value, name }) => [name, value]),
+        //       ),
+        //     );
+        //     await createCar(car);
+        //     await updateStateGarage();
+        //     document.getElementById('garage').innerHTML = renderGarage();
+        //     document.getElementById('create-name').value = '';
+        //     event.target.disabled = true;
+        //   });
       },
     );
-    // document
-    //   .getElementById('update-submit')
-    //   .addEventListener('submit', async event => {
-    //     event.preventDefault();
-    //     const car = Object.fromEntries(
-    //       new Map(
-    //         [...event.target]
-    //           .filter(({ name }) => !!name)
-    //           .map(({ value, name }) => [name, value]),
-    //       ),
-    //     );
-    //     await updateCar(selectedCar.id, car);
-    //     await updateStateGarage();
-    //     document.getElementById('garage').innerHTML = renderCarImage();
-    //     document.getElementById('update-name').value = '';
-    //     document.getElementById('update-name').disabled = true;
-    //     document.getElementById('update-color').disabled = true;
-    //     document.getElementById('update-submit').disabled = true;
-    //     document.getElementById('update-color').value = '#ffffff';
-    //     selectedCar = null;
-    //   });
   }
 
   render() {

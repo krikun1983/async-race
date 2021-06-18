@@ -1,6 +1,7 @@
 import {
   Car,
   CarsBody,
+  createCar,
   deleteCar,
   getCars,
   getWinners,
@@ -17,6 +18,7 @@ type Store = {
   winnersCount: string | null;
   getCars: () => Promise<void>;
   deleteCar: (id: number) => Promise<void>;
+  createCar(body: CarsBody): Promise<void>;
   updateCar: (id: number, body: CarsBody) => Promise<void>;
   getWinners: () => Promise<void>;
   sortBy: null;
@@ -45,6 +47,10 @@ export const store: Store = {
   },
   async deleteCar(id: number) {
     await deleteCar(id);
+    await this.getCars();
+  },
+  async createCar(body: CarsBody) {
+    await createCar(body);
     await this.getCars();
   },
   async updateCar(id: number, body: CarsBody) {
