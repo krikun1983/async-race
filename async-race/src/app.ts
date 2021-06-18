@@ -22,8 +22,8 @@ export class App {
     через 2 дня, если не сложно. Нахожуь в процессе заполнения!!!
     Ну или оставьте свои координаты. Заранее спасибо)))</div>`;
     this.rootElement.appendChild(this.pageGarageView.element);
-    this.rootElement.appendChild(this.garageButtonsNextPrev.element);
     this.rootElement.appendChild(this.pageWinnersView.element);
+    this.rootElement.appendChild(this.garageButtonsNextPrev.element);
     Header.pageHidden();
   }
 

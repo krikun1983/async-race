@@ -3,6 +3,7 @@ import {
   CarsBody,
   createCar,
   deleteCar,
+  deleteWinner,
   getCars,
   getWinners,
   updateCar,
@@ -21,8 +22,10 @@ type Store = {
   createCar(body: CarsBody): Promise<void>;
   updateCar: (id: number, body: CarsBody) => Promise<void>;
   getWinners: () => Promise<void>;
+  deleteWinner: (id: number) => Promise<void>;
   sortBy: null;
   sortOrder: null;
+  view: 'garage';
 };
 
 export type Animat = {
@@ -62,6 +65,11 @@ export const store: Store = {
     this.winners = items;
     this.winnersCount = count;
   },
+  async deleteWinner(id: number) {
+    await deleteWinner(id);
+    await this.getWinners();
+  },
   sortBy: null,
   sortOrder: null,
+  view: 'garage',
 };

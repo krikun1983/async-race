@@ -3,6 +3,7 @@ import { BaseComponent } from '../../base-components';
 import {
   deleteCar,
   drive,
+  generateRandomCars,
   getCar,
   // getCar,
   getCars,
@@ -18,7 +19,6 @@ import {
 import { animat, store } from '../../../store';
 import './garage.scss';
 import { GaragePartUpdate } from './garagePartUpdate';
-import { GarageButtonsNextPrev } from './garageButtonsNextPrev/garageButtonsNextPrev';
 
 export interface GarageCar {
   id: number;
@@ -196,15 +196,16 @@ export class Garage extends BaseComponent {
   };
 
   updateStateGarage = async (): Promise<void> => {
+    await store.getCars();
     if (store.carsPage * 7 < Number(store.carsCount)) {
-      document.getElementById('button-next')?.removeAttribute('disabled');
+      document.querySelector('.button-next')?.removeAttribute('disabled');
     } else {
-      document.getElementById('button-next')?.setAttribute('disabled', '');
+      document.querySelector('.button-next')?.setAttribute('disabled', '');
     }
     if (store.carsPage > 1) {
-      document.getElementById('button-prev')?.removeAttribute('disabled');
+      document.querySelector('.button-prev')?.removeAttribute('disabled');
     } else {
-      document.getElementById('button-prev')?.setAttribute('disabled', '');
+      document.querySelector('.button-prev')?.setAttribute('disabled', '');
     }
   };
 
@@ -214,10 +215,6 @@ export class Garage extends BaseComponent {
       garage.remove();
     }
   }
-
-  // temp() {
-  //   const promises = store.cars.map(({ id }) => this.startDriving(id));
-  // }
 
   // raceAll = async (promises, ids) => {
   //   const { success, id, time } = await Promise.race(promises);
@@ -232,7 +229,7 @@ export class Garage extends BaseComponent {
   //       ...ids.slice(0, failedIndex),
   //       ...ids.slice(failedIndex + 1, ids.length),
   //     ];
-  //     return raceAll(restPromises, restIds);
+  //     return this.raceAll(restPromises, restIds);
   //   }
 
   //   return {
@@ -244,11 +241,10 @@ export class Garage extends BaseComponent {
   // race = async action => {
   //   const promises = store.cars.map(({ id }) => action(id));
 
-  //   const winner = await raceAll(
+  //   const winner = await this.raceAll(
   //     promises,
   //     store.cars.map(car => car.id),
   //   );
-
   //   return winner;
   // };
 
@@ -296,25 +292,65 @@ export class Garage extends BaseComponent {
           const id = +(event.target as HTMLElement).id.split('remove-car-')[1];
           this.element.innerHTML = '';
           await store.deleteCar(id);
+          await store.deleteWinner(id);
+          await this.updateStateGarage();
           (document.querySelector('.garage') as HTMLDivElement).innerHTML =
             this.renderGarage();
         }
         if ((event.target as HTMLElement).classList.contains('btn-race')) {
           (event.target as HTMLElement).setAttribute('disabled', '');
-          store.cars.map(({ id }) => this.startDriving(id));
-          // const winner = await race(startDriving);
+          (
+            document.querySelector('.btn-generate') as HTMLButtonElement
+          ).disabled = true;
+          (
+            document.querySelector('.btn-create') as HTMLButtonElement
+          ).disabled = true;
+          (
+            document.querySelector('.btn-reset') as HTMLButtonElement
+          ).removeAttribute('disabled');
+          const promises = store.cars.map(({ id }) => this.startDriving(id));
+          const result = await Promise.all(promises);
+          let resultMin = 10000;
+          let carWinner = 0;
+          result.forEach(elem => {
+            if (elem.success) {
+              if (resultMin >= elem.time) {
+                resultMin = elem.time;
+                carWinner = elem.id;
+              }
+            }
+          });
+
+          const winner = store.cars.find(car => car.id === carWinner);
+          const time = +(resultMin / 1000).toFixed(2);
+          const resultRase = document.querySelector('.result');
+          (
+            resultRase as HTMLDivElement
+          ).innerHTML = `Победил <span>${winner?.name}</span>. Его время <span>${time}</span> сек`;
+          // console.log(result);
+          // const { success, id, time } = await Promise.race(promises);
+          // console.log(success, id, time);
+          // const winner = await this.race(this.startDriving);
+          // console.log(winner);
           // await saveWinner(winner);
           // const message = document.getElementById('message');
           // message.innerHTML = `${winner.name} went first (${winner.time}s)!`;
           // message.classList.toggle('visible', true);
-          // document.getElementById('reset').disabled = false;
         }
         if ((event.target as HTMLElement).classList.contains('btn-reset')) {
           (event.target as HTMLElement).setAttribute('disabled', '');
+          (document.querySelector('.result') as HTMLDivElement).innerHTML = '';
           store.cars.map(({ id }) => this.stopDriving(id));
-          // const message = document.getElementById('message');
-          // message.classList.toggle('visible', false);
-          document.getElementById('btn-race')?.removeAttribute('disabled');
+          (
+            document.querySelector('.btn-generate') as HTMLButtonElement
+          ).disabled = false;
+          (
+            document.querySelector('.btn-create') as HTMLButtonElement
+          ).disabled = false;
+          (document.querySelector('.result') as HTMLDivElement).innerHTML = '';
+          (
+            document.querySelector('.btn-race') as HTMLButtonElement
+          ).removeAttribute('disabled');
         }
         if ((event.target as HTMLElement).classList.contains('btn-update')) {
           // event.preventDefault();
@@ -359,25 +395,65 @@ export class Garage extends BaseComponent {
           (document.querySelector('.garage') as HTMLDivElement).innerHTML =
             this.renderGarage();
           createName.value = '';
-          createColor.value = '';
+          createColor.value = '#ffffff';
         }
-        // document
-        //   .getElementById('create')
-        //   .addEventListener('submit', async event => {
-        //     event.preventDefault();
-        //     const car = Object.fromEntries(
-        //       new Map(
-        //         [...event.target]
-        //           .filter(({ name }) => !!name)
-        //           .map(({ value, name }) => [name, value]),
-        //       ),
-        //     );
-        //     await createCar(car);
-        //     await updateStateGarage();
-        //     document.getElementById('garage').innerHTML = renderGarage();
-        //     document.getElementById('create-name').value = '';
-        //     event.target.disabled = true;
-        //   });
+        if (
+          (event.target as HTMLButtonElement).classList.contains('btn-generate')
+        ) {
+          (event.target as HTMLButtonElement).disabled = true;
+          this.element.innerHTML = '';
+          const cars = generateRandomCars(100);
+
+          await Promise.all(cars.map(async c => store.createCar(c)));
+          await this.updateStateGarage();
+          (document.querySelector('.garage') as HTMLDivElement).innerHTML =
+            this.renderGarage();
+          (event.target as HTMLButtonElement).disabled = false;
+        }
+
+        if (
+          (event.target as HTMLButtonElement).classList.contains('button-next')
+        ) {
+          switch (store.view) {
+            case 'garage': {
+              this.element.innerHTML = '';
+              store.carsPage += 1;
+              await this.updateStateGarage();
+              (document.querySelector('.garage') as HTMLDivElement).innerHTML =
+                this.renderGarage();
+              break;
+            }
+            // case 'winners': {
+            // store.winnersPage += 1;
+            // await updateStateWinners();
+            // document.getElementById('winners-view').innerHTML = renderWinners();
+            // break;
+            // }
+            default:
+          }
+        }
+        if (
+          (event.target as HTMLButtonElement).classList.contains('button-prev')
+        ) {
+          switch (store.view) {
+            case 'garage': {
+              this.element.innerHTML = '';
+              store.carsPage -= 1;
+              await this.updateStateGarage();
+              (document.querySelector('.garage') as HTMLDivElement).innerHTML =
+                this.renderGarage();
+              break;
+            }
+            // case 'winners': {
+            //   store.winnersPage -= 1;
+            //   await updateStateWinners();
+            //   document.getElementById('winners-view').innerHTML =
+            //     renderWinners();
+            //   break;
+            // }
+            default:
+          }
+        }
       },
     );
   }
