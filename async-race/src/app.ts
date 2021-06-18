@@ -18,9 +18,6 @@ export class App {
     this.garageButtonsNextPrev = new GarageButtonsNextPrev();
     this.pageWinnersView = new PageWinnersView();
     this.rootElement.appendChild(this.header.element);
-    this.rootElement.innerHTML += `<div class="help">Огромная просьба проверить
-    через 1 день, если не сложно. Нахожусь в процессе заполнения!!!
-    Ну или оставьте свои координаты. Заранее спасибо)))</div>`;
     this.rootElement.appendChild(this.pageGarageView.element);
     this.rootElement.appendChild(this.pageWinnersView.render());
     this.rootElement.appendChild(this.garageButtonsNextPrev.element);

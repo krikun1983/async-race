@@ -94,7 +94,7 @@ export const drive = async (id: number) => {
 };
 
 export type WinnersSort = 'id' | 'wins' | 'time';
-export type WinnersOrder = 'ASC' | 'DESC';
+export type WinnersOrder = 'asc' | 'desc';
 
 const getSortOrder = (sort: WinnersSort, order: string) => {
   if (sort && order) return `&_sort=${sort}&_order=${order}`;
@@ -105,12 +105,12 @@ export const getWinners = async ({
   page,
   limit = 10,
   sort = 'time',
-  order = 'DESC',
+  order = 'desc',
 }: {
   page: number;
-  limit?: number;
-  sort?: WinnersSort;
-  order?: WinnersOrder;
+  limit: number;
+  sort: WinnersSort;
+  order: WinnersOrder;
 }): Promise<Winners> => {
   const response = await fetch(
     `${winners}?_page=${page}&_limit=${limit}${getSortOrder(sort, order)}`,

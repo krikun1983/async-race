@@ -463,13 +463,6 @@ export class Garage extends BaseComponent {
                 this.renderGarage();
               break;
             }
-            // case 'winners': {
-            //   store.winnersPage += 1;
-            //   await this.updateStateWinners();
-            //   document.getElementById('winners-view').innerHTML =
-            //     renderWinners();
-            //   break;
-            // }
             default:
           }
         }

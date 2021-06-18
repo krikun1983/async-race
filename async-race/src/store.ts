@@ -13,6 +13,8 @@ import {
   updateWinner,
   Winner,
   WinnerBody,
+  WinnersOrder,
+  WinnersSort,
 } from './app.api';
 
 type Store = {
@@ -22,6 +24,7 @@ type Store = {
   winners: Winner[];
   carsCount: string | null;
   winnersCount: string | null;
+  limit: number;
   getCars: () => Promise<void>;
   deleteCar: (id: number) => Promise<void>;
   createCar(body: CarsBody): Promise<void>;
@@ -31,8 +34,8 @@ type Store = {
   deleteWinner: (id: number) => Promise<void>;
   createWinner: (body: WinnerBody) => Promise<void>;
   updateWinner: (id: number, body: WinnerBody) => Promise<void>;
-  sortBy: null;
-  sortOrder: null;
+  sortBy: WinnersSort;
+  sortOrder: WinnersOrder;
   view: string;
 };
 
@@ -51,6 +54,7 @@ export const store: Store = {
   winners: [],
   carsCount: '0',
   winnersCount: '0',
+  limit: 10,
   async getCars() {
     const { items, count } = await getCars({ page: this.carsPage });
     this.cars = items;
@@ -69,7 +73,12 @@ export const store: Store = {
     await this.getCars();
   },
   async getWinners() {
-    const { items, count } = await getWinners({ page: this.winnersPage });
+    const { items, count } = await getWinners({
+      page: this.winnersPage,
+      limit: this.limit,
+      sort: this.sortBy,
+      order: this.sortOrder,
+    });
     this.winners = items;
     this.winnersCount = count;
   },
@@ -89,7 +98,7 @@ export const store: Store = {
     await updateWinner(id, body);
     await this.getWinners();
   },
-  sortBy: null,
-  sortOrder: null,
+  sortBy: 'wins',
+  sortOrder: 'asc',
   view: 'garage',
 };

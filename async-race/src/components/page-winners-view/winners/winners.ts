@@ -1,3 +1,4 @@
+import { WinnersSort } from '../../../app.api';
 import { store } from '../../../store';
 import { BaseComponent } from '../../base-components';
 
@@ -80,6 +81,15 @@ export class WinnersView extends BaseComponent {
     }
   };
 
+  setSortOrder = async (sortBy: WinnersSort) => {
+    store.sortOrder = store.sortOrder === 'asc' ? 'desc' : 'asc';
+    store.sortBy = sortBy;
+    this.element.innerHTML = '';
+    await this.updateStateWinners();
+    (document.querySelector('.winners') as HTMLElement).innerHTML =
+      this.renderWinners();
+  };
+
   renders(): void {
     document.body.addEventListener(
       'click',
@@ -94,7 +104,18 @@ export class WinnersView extends BaseComponent {
           (document.querySelector('.winners') as HTMLElement).innerHTML =
             this.renderWinners();
         }
-
+        if ((event.target as HTMLElement).classList.contains('table-wins')) {
+          this.element.innerHTML = '';
+          await this.setSortOrder('wins');
+          (document.querySelector('.winners') as HTMLElement).innerHTML =
+            this.renderWinners();
+        }
+        if ((event.target as HTMLElement).classList.contains('table-time')) {
+          this.element.innerHTML = '';
+          await this.setSortOrder('time');
+          (document.querySelector('.winners') as HTMLElement).innerHTML =
+            this.renderWinners();
+        }
         if (
           (event.target as HTMLButtonElement).classList.contains('button-next')
         ) {
