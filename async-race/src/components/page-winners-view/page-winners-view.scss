@@ -1,3 +1,29 @@
 .hidden {
   display: none;
 }
+
+.table {
+  margin-bottom: 50px;
+}
+
+.table td,
+.table th {
+  font-size: 20px;
+  padding: 8px;
+}
+.table th {
+  background: rgb(19, 126, 248);
+  margin-right: 5px;
+}
+.table-button {
+  cursor: pointer;
+  user-select: none;
+}
+.table-button.asc::after {
+  /* ATTENSION  */
+  content: 'UP';
+}
+.table-button.desc::after {
+  /* ATTENSION  */
+  content: 'DOWN';
+}

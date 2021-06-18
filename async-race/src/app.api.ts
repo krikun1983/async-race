@@ -4,13 +4,19 @@ const garage = `${base}/garage`;
 const engine = `${base}/engine`;
 const winners = `${base}/winners`;
 
-export interface Winners {
+export interface Winner {
   id: number;
   wins: number;
   time: number;
 }
 
+export interface Winners {
+  items: Winner[];
+  count: string | null;
+}
+
 export interface WinnerBody {
+  id?: number;
   wins: number;
   time: number;
 }
@@ -86,7 +92,10 @@ export const drive = async (id: number) => {
   return res.status !== 200 ? { success: false } : { ...(await res.json()) };
 };
 
-const getSortOrder = (sort: number, order: string) => {
+export type WinnersSort = 'id' | 'wins' | 'time';
+export type WinnersOrder = 'ASC' | 'DESC';
+
+const getSortOrder = (sort: WinnersSort, order: string) => {
   if (sort && order) return `&_sort=${sort}&_order=${order}`;
   return '';
 };
@@ -94,14 +103,14 @@ const getSortOrder = (sort: number, order: string) => {
 export const getWinners = async ({
   page,
   limit = 10,
-  sort,
-  order,
+  sort = 'time',
+  order = 'DESC',
 }: {
   page: number;
   limit?: number;
-  sort: number;
-  order: string;
-}) => {
+  sort?: WinnersSort;
+  order?: WinnersOrder;
+}): Promise<Winners> => {
   const response = await fetch(
     `${winners}?_page=${page}&_limit=${limit}${getSortOrder(sort, order)}`,
   );
@@ -127,7 +136,7 @@ export const getWinnerStatus = async (id: number) =>
 export const deleteWinner = async (id: number) =>
   (await fetch(`${winners}/${id}`, { method: 'DELETE' })).json();
 
-export const createWinner = async (body: Winners) =>
+export const createWinner = async (body: Winner) =>
   (
     await fetch(winners, {
       method: 'POST',
@@ -149,21 +158,27 @@ export const updateWinner = async (id: number, body: WinnerBody) =>
     })
   ).json();
 
-// export const saveWinner = async ({ id, time }: {}) => {
-//   const winnerStatus = await getWinnerStatus(id);
+export const saveWinner = async ({
+  id,
+  time,
+}: {
+  id: number;
+  time: number;
+}) => {
+  const winnerStatus = await getWinnerStatus(id);
 
-//   if (winnerStatus === 404) {
-//     await createWinner({
-//       id,
-//       wins: 1,
-//       time,
-//     });
-//   } else {
-//     const winner = await getWinner(id);
-//     await updateWinner(id, {
-//       id,
-//       wins: winner.wins + 1,
-//       time: time < winner.time ? time : winner.time,
-//     });
-//   }
-// };
+  if (winnerStatus === 404) {
+    await createWinner({
+      id,
+      wins: 1,
+      time,
+    });
+  } else {
+    const winner = await getWinner(id);
+    await updateWinner(id, {
+      id,
+      wins: winner.wins + 1,
+      time: time < winner.time ? time : winner.time,
+    });
+  }
+};

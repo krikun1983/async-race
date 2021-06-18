@@ -3,10 +3,12 @@ import { BaseComponent } from '../../base-components';
 import {
   deleteCar,
   drive,
+  getCar,
   // getCar,
   getCars,
   startEngine,
   stopEngine,
+  updateCar,
   // createCar,
   // updateCar,
   // saveWinner,
@@ -24,6 +26,14 @@ export interface GarageCar {
   color: string;
   isEngeneStarted?: boolean;
 }
+
+export type UpdateCar = {
+  id?: number;
+  name?: string;
+  color?: string;
+};
+
+let selectedCar: { name: string; color: string; id: number } | null = null;
 
 export class Garage extends BaseComponent {
   private readonly garagePartUpdate: GaragePartUpdate;
@@ -97,9 +107,7 @@ export class Garage extends BaseComponent {
     <h2>Garage (${store.carsCount})</h2>
     <h3>Page #${store.carsPage}</h3>
     <ul class="garage__list">
-      ${store.cars
-        .map(car => `<li id='carDel-${car.id}'>${this.renderCar(car)}</li>`)
-        .join('')}
+      ${store.cars.map(car => `<li>${this.renderCar(car)}</li>`).join('')}
     </ul>
   `;
 
@@ -270,6 +278,24 @@ export class Garage extends BaseComponent {
           )[1];
           this.stopDriving(id);
         }
+        if ((event.target as HTMLElement).classList.contains('select-button')) {
+          selectedCar = await getCar(
+            +(event.target as HTMLElement).id.split('select-car-')[1],
+          );
+          (document.getElementById('update-name') as HTMLInputElement).value =
+            selectedCar!.name;
+          (document.getElementById('update-color') as HTMLInputElement).value =
+            selectedCar!.color;
+          (
+            document.getElementById('update-name') as HTMLInputElement
+          ).disabled = false;
+          (
+            document.getElementById('update-color') as HTMLInputElement
+          ).disabled = false;
+          (
+            document.getElementById('update-submit') as HTMLButtonElement
+          ).disabled = false;
+        }
         if ((event.target as HTMLElement).classList.contains('remove-button')) {
           const id = +(event.target as HTMLElement).id.split('remove-car-')[1];
           this.element.innerHTML = '';
@@ -294,8 +320,63 @@ export class Garage extends BaseComponent {
           // message.classList.toggle('visible', false);
           document.getElementById('btn-race')?.removeAttribute('disabled');
         }
+        if ((event.target as HTMLElement).classList.contains('btn-update')) {
+          // event.preventDefault();
+          const updateText = document.getElementById(
+            'update-name',
+          ) as HTMLInputElement;
+          const updateColor = document.getElementById(
+            'update-color',
+          ) as HTMLInputElement;
+          if (updateText.value && updateColor.value) {
+            const car = {
+              name: updateText.value,
+              color: updateColor.value,
+            };
+            this.element.innerHTML = '';
+            await store.updateCar(selectedCar!.id, car);
+            (document.querySelector('.garage') as HTMLDivElement).innerHTML =
+              this.renderGarage();
+            updateText.value = '';
+            updateText.disabled = true;
+            updateColor.disabled = true;
+            (
+              document.getElementById('update-submit') as HTMLButtonElement
+            ).disabled = true;
+            updateColor.value = '#ffffff';
+            selectedCar = null;
+          }
+          // const car = Object.fromEntries(
+          //   new Map(
+          //     [...(event.target as HTMLElement)]
+          //       .filter(({ name }) => !!name)
+          //       .map(({ value, name }) => [name, value]),
+          //   ),
+          // );
+        }
       },
     );
+    // document
+    //   .getElementById('update-submit')
+    //   .addEventListener('submit', async event => {
+    //     event.preventDefault();
+    //     const car = Object.fromEntries(
+    //       new Map(
+    //         [...event.target]
+    //           .filter(({ name }) => !!name)
+    //           .map(({ value, name }) => [name, value]),
+    //       ),
+    //     );
+    //     await updateCar(selectedCar.id, car);
+    //     await updateStateGarage();
+    //     document.getElementById('garage').innerHTML = renderCarImage();
+    //     document.getElementById('update-name').value = '';
+    //     document.getElementById('update-name').disabled = true;
+    //     document.getElementById('update-color').disabled = true;
+    //     document.getElementById('update-submit').disabled = true;
+    //     document.getElementById('update-color').value = '#ffffff';
+    //     selectedCar = null;
+    //   });
   }
 
   render() {

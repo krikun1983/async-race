@@ -5,9 +5,9 @@ export class FormUpdate extends BaseComponent {
   constructor() {
     super('form', ['form-update']);
     this.element.innerHTML = `
-      <input class="update-name" type="text" placeholder="Car name">
-      <input class="update-color" type="color" value="#ffffff">
-      <button class="btn-update" type="button">Update</button>
+      <input class="update-name" id="update-name" type="text" placeholder="Car name" disabled>
+      <input class="update-color" id="update-color" type="color" value="#ffffff" disabled>
+      <button class="btn-update" id="update-submit" type="button" disabled>Update</button>
     `;
   }
 }
