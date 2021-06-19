@@ -146,6 +146,13 @@ export class WinnersView extends BaseComponent {
             default:
           }
         }
+        if ((event.target as HTMLElement).classList.contains('btn-update')) {
+          // event.preventDefault();
+          this.element.innerHTML = '';
+          await this.updateStateWinners();
+          (document.querySelector('.winners') as HTMLElement).innerHTML =
+            this.renderWinners();
+        }
       },
     );
   }
