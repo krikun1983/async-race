@@ -1,7 +1,7 @@
-import { App } from './app';
-import { Garage } from './components/page-garage-view/garage/garage';
-import { WinnersView } from './components/page-winners-view/winners/winners';
-import { store } from './store';
+import App from './app';
+import Garage from './components/page-garage-view/garage/garage';
+import WinnersView from './components/page-winners-view/winners';
+import store from './store';
 import './style.scss';
 
 const { body } = document;
@@ -16,7 +16,4 @@ window.onload = () => {
     });
     new WinnersView().renders();
   });
-  // store.getWinners().then(() => {
-  //   new WinnersView().renders();
-  // });
 };

@@ -8,22 +8,24 @@
 
 .table td,
 .table th {
-  font-size: 20px;
   padding: 8px;
+  font-size: 20px;
 }
+
 .table th {
-  background: rgb(19, 126, 248);
   margin-right: 5px;
+  background-color: rgb(19, 126, 248);
 }
+
 .table-button {
   cursor: pointer;
   user-select: none;
 }
+
 .table-button.asc::after {
-  /* ATTENSION  */
   content: '↑';
 }
+
 .table-button.desc::after {
-  /* ATTENSION  */
   content: '↓';
 }

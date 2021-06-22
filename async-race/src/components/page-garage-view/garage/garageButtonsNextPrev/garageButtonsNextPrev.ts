@@ -1,7 +1,7 @@
-import { BaseComponent } from '../../../base-components';
+import BaseComponent from '../../../base-components';
 import './garageButtonsNextPrev.scss';
 
-export class GarageButtonsNextPrev extends BaseComponent {
+export default class GarageButtonsNextPrev extends BaseComponent {
   constructor() {
     super('div', ['buttonsNextPrev']);
     this.element.innerHTML = `

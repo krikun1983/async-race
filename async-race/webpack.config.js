@@ -8,7 +8,7 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = !isDev;
 
-const filename = (ext) => (isDev ? `[name].${ext}` : `[name].[hash].${ext}`);
+const filename = ext => (isDev ? `[name].${ext}` : `[name].[hash].${ext}`);
 
 const devServer = () =>
   !isDev
@@ -22,7 +22,7 @@ const devServer = () =>
         },
       };
 
-const esLintPlugin = (isDev) =>
+const esLintPlugin = isDev =>
   isDev ? [] : [new ESLintPlugin({ extensions: ['ts', 'js'] })];
 
 module.exports = {
@@ -75,7 +75,7 @@ module.exports = {
     ...esLintPlugin(isDev),
     new MiniCssExtractPlugin({ filename: filename('css') }),
     new HtmlWebpackPlugin({
-      template: './index.html', //template: path.resolve(__dirname, './src/index.html')
+      template: './index.html', // template: path.resolve(__dirname, './src/index.html')
       minify: {
         collapseWhitespace: isProd,
       },

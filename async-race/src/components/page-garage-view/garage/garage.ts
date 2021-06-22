@@ -1,28 +1,23 @@
-import { BaseComponent } from '../../base-components';
+import BaseComponent from '../../base-components';
 
 import {
-  deleteCar,
   drive,
   generateRandomCars,
   getCar,
-  // getCar,
-  getCars,
   getWinner,
   getWinnerStatus,
-  saveWinner,
   startEngine,
   stopEngine,
-  updateCar,
-  // createCar,
-  // updateCar,
-  // saveWinner,
-  // getWinners,
-  // getWinner,
 } from '../../../app.api';
-import { animat, store } from '../../../store';
+import store from '../../../store';
+import GaragePartUpdate from './garagePartUpdate';
+import WinnersView from '../../page-winners-view/winners';
+import { Animat } from '../../../type';
 import './garage.scss';
-import { GaragePartUpdate } from './garagePartUpdate';
-import { WinnersView } from '../../page-winners-view/winners/winners';
+
+export const animat: Animat = {
+  animation: {},
+};
 
 export interface GarageCar {
   id: number;
@@ -39,7 +34,7 @@ export type UpdateCar = {
 
 let selectedCar: { name: string; color: string; id: number } | null = null;
 
-export class Garage extends BaseComponent {
+export default class Garage extends BaseComponent {
   private readonly garagePartUpdate: GaragePartUpdate;
 
   private readonly winnersView: WinnersView;
@@ -106,7 +101,7 @@ export class Garage extends BaseComponent {
     </div>
   `;
 
-  renderGarage = () => `
+  renderGarage = (): string => `
     <h2>Garage (${store.carsCount})</h2>
     <h3>Page #${store.carsPage}</h3>
     <ul class="garage__list">
@@ -132,7 +127,7 @@ export class Garage extends BaseComponent {
   };
 
   private animation = (
-    car: HTMLElement,
+    car: HTMLDivElement,
     distance: number,
     animationTime: number,
   ): { id: number } => {
@@ -141,17 +136,20 @@ export class Garage extends BaseComponent {
       id: number;
     } = { id: 1 };
 
-    function step(timestamp: number) {
+    const step = (timestamp: number) => {
       if (!start) start = timestamp;
       const time = timestamp - start;
       const passed = Math.round(time * (distance / animationTime));
-
-      car.style.transform = `translateX(${Math.min(passed, distance)}px)`;
+      const carStyleTransform = car;
+      carStyleTransform.style.transform = `translateX(${Math.min(
+        passed,
+        distance,
+      )}px)`;
 
       if (passed < distance) {
         state.id = window.requestAnimationFrame(step);
       }
-    }
+    };
     state.id = window.requestAnimationFrame(step);
 
     return state;
@@ -169,8 +167,8 @@ export class Garage extends BaseComponent {
     const stopButton = document.getElementById(`stop-engine-car-${id}`);
     stopButton?.removeAttribute('disabled');
 
-    const car = document.getElementById(`car-${id}`);
-    const flag = document.getElementById(`flag-${id}`);
+    const car = document.getElementById(`car-${id}`) as HTMLDivElement;
+    const flag = document.getElementById(`flag-${id}`) as HTMLDivElement;
     if (car && flag) {
       const htmlDistance =
         Math.floor(this.getDistanceBetweenElements(car, flag)) + 10;
@@ -241,28 +239,18 @@ export class Garage extends BaseComponent {
     document.body.addEventListener(
       'click',
       async (event: Event): Promise<void> => {
-        if (
-          (event.target as HTMLElement).classList.contains(
-            'start-engine-button',
-          )
-        ) {
-          const id = +(event.target as HTMLElement).id.split(
-            'start-engine-car-',
-          )[1];
+        const eventBtn = event.target as HTMLButtonElement;
+
+        if (eventBtn.classList.contains('start-engine-button')) {
+          const id = +eventBtn.id.split('start-engine-car-')[1];
           this.startDriving(id);
         }
-        if (
-          (event.target as HTMLElement).classList.contains('stop-engine-button')
-        ) {
-          const id = +(event.target as HTMLElement).id.split(
-            'stop-engine-car-',
-          )[1];
+        if (eventBtn.classList.contains('stop-engine-button')) {
+          const id = +eventBtn.id.split('stop-engine-car-')[1];
           this.stopDriving(id);
         }
-        if ((event.target as HTMLElement).classList.contains('select-button')) {
-          selectedCar = await getCar(
-            +(event.target as HTMLElement).id.split('select-car-')[1],
-          );
+        if (eventBtn.classList.contains('select-button')) {
+          selectedCar = await getCar(+eventBtn.id.split('select-car-')[1]);
           (document.getElementById('update-name') as HTMLInputElement).value =
             selectedCar!.name;
           (document.getElementById('update-color') as HTMLInputElement).value =
@@ -277,8 +265,8 @@ export class Garage extends BaseComponent {
             document.getElementById('update-submit') as HTMLButtonElement
           ).disabled = false;
         }
-        if ((event.target as HTMLElement).classList.contains('remove-button')) {
-          const id = +(event.target as HTMLElement).id.split('remove-car-')[1];
+        if (eventBtn.classList.contains('remove-button')) {
+          const id = +eventBtn.id.split('remove-car-')[1];
           this.element.innerHTML = '';
           await store.deleteCar(id);
           await store.deleteWinner(id);
@@ -287,9 +275,7 @@ export class Garage extends BaseComponent {
             this.renderGarage();
         }
 
-        if (
-          (event.target as HTMLElement).classList.contains('btn-winners-view')
-        ) {
+        if (eventBtn.classList.contains('btn-winners-view')) {
           store.cars.map(({ id }) => this.stopDriving(id));
           (document.querySelector('.btn-reset') as HTMLButtonElement).disabled =
             true;
@@ -308,8 +294,8 @@ export class Garage extends BaseComponent {
           ).removeAttribute('disabled');
         }
 
-        if ((event.target as HTMLElement).classList.contains('btn-race')) {
-          (event.target as HTMLElement).setAttribute('disabled', '');
+        if (eventBtn.classList.contains('btn-race')) {
+          eventBtn.setAttribute('disabled', '');
           (
             document.querySelector('.btn-generate') as HTMLButtonElement
           ).disabled = true;
@@ -338,22 +324,14 @@ export class Garage extends BaseComponent {
 
           const winnerSave = {
             id: winner!.id,
-            // name: winner?.name,
-            // color: winner?.color,
             wins: 1,
             time,
           };
 
-          // console.log(winnerSave);
           const resultRase = document.querySelector('.result');
           (
             resultRase as HTMLDivElement
           ).innerHTML = `Победил <span>${winner?.name}</span>. Его время <span>${winnerSave.time}</span> сек`;
-          // console.log(result);
-          // const { success, id, time } = await Promise.race(promises);
-          // console.log(success, id, time);
-          // const winner = await this.race(this.startDriving);
-          // console.log(winner);
           const winnerStatus = await getWinnerStatus(winnerSave.id);
           if (winnerStatus === 404) {
             await store.createWinner(winnerSave);
@@ -376,8 +354,8 @@ export class Garage extends BaseComponent {
             ).removeAttribute('disabled');
           }
         }
-        if ((event.target as HTMLElement).classList.contains('btn-reset')) {
-          (event.target as HTMLElement).setAttribute('disabled', '');
+        if (eventBtn.classList.contains('btn-reset')) {
+          eventBtn.setAttribute('disabled', '');
           (document.querySelector('.result') as HTMLDivElement).innerHTML =
             'Привет';
           store.cars.map(({ id }) => this.stopDriving(id));
@@ -393,7 +371,6 @@ export class Garage extends BaseComponent {
           ).removeAttribute('disabled');
         }
         if ((event.target as HTMLElement).classList.contains('btn-update')) {
-          // event.preventDefault();
           const updateName = document.getElementById(
             'update-name',
           ) as HTMLInputElement;
@@ -419,7 +396,7 @@ export class Garage extends BaseComponent {
             selectedCar = null;
           }
         }
-        if ((event.target as HTMLElement).classList.contains('btn-create')) {
+        if (eventBtn.classList.contains('btn-create')) {
           const createName = document.querySelector(
             '.create-name',
           ) as HTMLInputElement;
@@ -437,10 +414,8 @@ export class Garage extends BaseComponent {
           createName.value = '';
           createColor.value = '#ffffff';
         }
-        if (
-          (event.target as HTMLButtonElement).classList.contains('btn-generate')
-        ) {
-          (event.target as HTMLButtonElement).disabled = true;
+        if (eventBtn.classList.contains('btn-generate')) {
+          eventBtn.disabled = true;
           this.element.innerHTML = '';
           const cars = generateRandomCars(100);
 
@@ -448,12 +423,10 @@ export class Garage extends BaseComponent {
           await this.updateStateGarage();
           (document.querySelector('.garage') as HTMLDivElement).innerHTML =
             this.renderGarage();
-          (event.target as HTMLButtonElement).disabled = false;
+          eventBtn.disabled = false;
         }
 
-        if (
-          (event.target as HTMLButtonElement).classList.contains('button-next')
-        ) {
+        if (eventBtn.classList.contains('button-next')) {
           switch (store.view) {
             case 'garage': {
               this.element.innerHTML = '';
@@ -466,9 +439,7 @@ export class Garage extends BaseComponent {
             default:
           }
         }
-        if (
-          (event.target as HTMLButtonElement).classList.contains('button-prev')
-        ) {
+        if (eventBtn.classList.contains('button-prev')) {
           switch (store.view) {
             case 'garage': {
               this.element.innerHTML = '';
@@ -478,21 +449,10 @@ export class Garage extends BaseComponent {
                 this.renderGarage();
               break;
             }
-            // case 'winners': {
-            //   store.winnersPage -= 1;
-            //   await updateStateWinners();
-            //   document.getElementById('winners-view').innerHTML =
-            //     renderWinners();
-            //   break;
-            // }
             default:
           }
         }
       },
     );
-  }
-
-  render() {
-    return this.element;
   }
 }

@@ -1,9 +1,9 @@
-import { BaseComponent } from '../../base-components';
-import { FormCreate } from './form-create/form-create';
-import { FormUpdate } from './form-update/form-update';
+import BaseComponent from '../../base-components';
+import FormCreate from './form-create/form-create';
+import FormUpdate from './form-update/form-update';
 import './garage-forms.scss';
 
-export class GarageForms extends BaseComponent {
+export default class GarageForms extends BaseComponent {
   private readonly formCreate: FormCreate;
 
   private readonly formUpdate: FormUpdate;

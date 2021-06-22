@@ -1,7 +1,7 @@
-import { BaseComponent } from '../../../base-components';
+import BaseComponent from '../../../base-components';
 import './form-create.scss';
 
-export class FormCreate extends BaseComponent {
+export default class FormCreate extends BaseComponent {
   constructor() {
     super('form', ['form-create']);
     this.element.innerHTML = `

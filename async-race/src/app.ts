@@ -1,9 +1,9 @@
 import Header from './components/header';
 import PageGarageView from './components/page-garage-view';
-import { GarageButtonsNextPrev } from './components/page-garage-view/garage/garageButtonsNextPrev/garageButtonsNextPrev';
+import GarageButtonsNextPrev from './components/page-garage-view/garage/garageButtonsNextPrev/garageButtonsNextPrev';
 import PageWinnersView from './components/page-winners-view';
 
-export class App {
+export default class App {
   private readonly header: Header;
 
   private readonly pageGarageView: PageGarageView;

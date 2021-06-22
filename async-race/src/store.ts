@@ -1,6 +1,4 @@
 import {
-  Car,
-  CarsBody,
   createCar,
   createWinner,
   deleteCar,
@@ -8,14 +6,19 @@ import {
   getCars,
   getWinners,
   getWinnerStatus,
-  saveWinner,
   updateCar,
   updateWinner,
+} from './app.api';
+import WinnersSortCars from './constants/winners-sort-cars';
+import WinnersSortOrderCars from './constants/winners-sort-order-cars';
+import {
+  Car,
+  CarsBody,
   Winner,
   WinnerBody,
   WinnersOrder,
   WinnersSort,
-} from './app.api';
+} from './type';
 
 type Store = {
   carsPage: number;
@@ -39,15 +42,7 @@ type Store = {
   view: string;
 };
 
-export type Animat = {
-  animation: { [key: number]: { id: number } };
-};
-
-export const animat: Animat = {
-  animation: {},
-};
-
-export const store: Store = {
+const store: Store = {
   carsPage: 1,
   winnersPage: 1,
   cars: [],
@@ -98,7 +93,9 @@ export const store: Store = {
     await updateWinner(id, body);
     await this.getWinners();
   },
-  sortBy: 'wins',
-  sortOrder: 'asc',
+  sortBy: WinnersSortCars.wins,
+  sortOrder: WinnersSortOrderCars.desc,
   view: 'garage',
 };
+
+export default store;

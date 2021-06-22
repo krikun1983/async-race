@@ -1,10 +1,10 @@
-import { BaseComponent } from '../base-components';
-import { Controls } from './controls/controls';
-import { GarageForms } from './garage-form/garage-forms';
-import { Garage } from './garage/garage';
-import { ResultGarage } from './result/result';
+import BaseComponent from '../base-components';
+import Controls from './controls/controls';
+import GarageForms from './garage-form/garage-forms';
+import Garage from './garage/garage';
+import ResultGarage from './result/result';
 
-export class PageGarageView extends BaseComponent {
+export default class PageGarageView extends BaseComponent {
   private readonly garageForms: GarageForms;
 
   private readonly controls: Controls;

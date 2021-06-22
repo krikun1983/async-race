@@ -1,6 +1,6 @@
-import { BaseComponent } from '../../base-components';
+import BaseComponent from '../../base-components';
 
-export class ResultGarage extends BaseComponent {
+export default class ResultGarage extends BaseComponent {
   constructor() {
     super('div', ['result']);
   }

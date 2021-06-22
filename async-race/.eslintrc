@@ -15,43 +15,6 @@
     "project": "./tsconfig.json"
   },
   "plugins": [
-    "@typescript-eslint",
-    "prettier"
-  ],
-  "rules": {
-    "no-plusplus": [
-      "error",
-      {
-        "allowForLoopAfterthoughts": true
-      }
-    ],
-    "no-console": "error",
-    "max-len": [
-      "warn",
-      {
-        "code": 120
-      }
-    ],
-    "indent": [
-      "warn",
-      2,
-      {
-        "SwitchCase": 1
-      }
-    ],
-    "@typescript-eslint/indent": [
-      "warn",
-      2,
-      {
-        "SwitchCase": 1
-      }
-    ],
-    "import/prefer-default-export": 0,
-    "no-param-reassign": [
-      "error",
-      {
-        "props": false
-      }
-    ]
-  }
+    "@typescript-eslint"
+  ]
 }

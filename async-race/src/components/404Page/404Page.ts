@@ -1,6 +1,6 @@
-import { BaseComponent } from '../base-components';
+import BaseComponent from '../base-components';
 
-export class NotFound404Page extends BaseComponent {
+export default class NotFound404Page extends BaseComponent {
   constructor() {
     super('section');
     this.element.textContent = 'NOT FOUND 404';

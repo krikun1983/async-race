@@ -1,7 +1,7 @@
-import { BaseComponent } from '../../../base-components';
+import BaseComponent from '../../../base-components';
 import './form-update.scss';
 
-export class FormUpdate extends BaseComponent {
+export default class FormUpdate extends BaseComponent {
   constructor() {
     super('form', ['form-update']);
     this.element.innerHTML = `

@@ -1,7 +1,7 @@
-import { BaseComponent } from '../../base-components';
+import BaseComponent from '../../base-components';
 import './controls.scss';
 
-export class Controls extends BaseComponent {
+export default class Controls extends BaseComponent {
   constructor() {
     super('div', ['conrols']);
     this.element.innerHTML = `

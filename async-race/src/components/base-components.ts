@@ -1,4 +1,4 @@
-export class BaseComponent {
+export default class BaseComponent {
   readonly element: HTMLElement;
 
   constructor(tag: keyof HTMLElementTagNameMap = 'div', styles: string[] = []) {

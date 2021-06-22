@@ -1,7 +1,7 @@
-import { BaseComponent } from '../../base-components';
+import BaseComponent from '../../base-components';
 import './menu.scss';
 
-export class Menu extends BaseComponent {
+export default class Menu extends BaseComponent {
   constructor() {
     super('nav', ['menu']);
     this.element.appendChild(Menu.renderButtonToGarage());

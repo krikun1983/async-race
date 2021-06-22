@@ -1,3 +1,3 @@
-import { PageGarageView } from './page-garage-view';
+import PageGarageView from './page-garage-view';
 
 export default PageGarageView;

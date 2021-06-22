@@ -3,7 +3,7 @@ import NotFound404Page from '../components/404Page';
 import PageGarageView from '../components/page-garage-view';
 import PageWinnersView from '../components/page-winners-view';
 
-export const routes: Route[] = [
+const routes: Route[] = [
   {
     path: '/',
     Component: PageGarageView,
@@ -21,3 +21,5 @@ export const routes: Route[] = [
     Component: NotFound404Page,
   },
 ];
+
+export default routes;

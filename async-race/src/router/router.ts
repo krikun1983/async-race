@@ -1,6 +1,6 @@
 import { Route } from '../type';
 
-export class Router {
+export default class Router {
   private get notFound404Route(): Route {
     const notFound404route = this.routes.find(route => route.path === '**');
 

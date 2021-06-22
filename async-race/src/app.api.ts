@@ -1,41 +1,22 @@
+import WinnersSortCars from './constants/winners-sort-cars';
+import WinnersSortOrderCars from './constants/winners-sort-order-cars';
+import {
+  Car,
+  Cars,
+  CarsBody,
+  Success,
+  Transform,
+  WinnerBody,
+  Winners,
+  WinnersOrder,
+  WinnersSort,
+} from './type';
+
 const base = 'http://127.0.0.1:3000';
 
 const garage = `${base}/garage`;
 const engine = `${base}/engine`;
 const winners = `${base}/winners`;
-
-export interface Winner {
-  car: { name: string; color: string; id: number };
-  id: number;
-  wins: number;
-  time: number;
-}
-
-export interface Winners {
-  items: Winner[];
-  count: string | null;
-}
-
-export interface WinnerBody {
-  id: number;
-  wins: number;
-  time: number;
-}
-export interface Car {
-  id: number;
-  name: string;
-  color: string;
-}
-
-export interface Cars {
-  items: Car[];
-  count: string | null;
-}
-
-export interface CarsBody {
-  name: string;
-  color: string;
-}
 
 export const getCars = async ({
   page = 1,
@@ -52,11 +33,11 @@ export const getCars = async ({
   };
 };
 
-export const getCar = async (id: number) => {
+export const getCar = async (id: number): Promise<Car> => {
   return (await fetch(`${garage}/${id}`)).json();
 };
 
-export const createCar = async (body: CarsBody) => {
+export const createCar = async (body: CarsBody): Promise<Car> => {
   const response = await fetch(`${garage}`, {
     method: 'POST',
     headers: {
@@ -68,10 +49,10 @@ export const createCar = async (body: CarsBody) => {
   return car;
 };
 
-export const deleteCar = async (id: number) =>
+export const deleteCar = async (id: number): Promise<Car> =>
   (await fetch(`${garage}/${id}`, { method: 'DELETE' })).json();
 
-export const updateCar = async (id: number, body: CarsBody) =>
+export const updateCar = async (id: number, body: CarsBody): Promise<Car> =>
   (
     await fetch(`${garage}/${id}`, {
       method: 'PUT',
@@ -82,19 +63,16 @@ export const updateCar = async (id: number, body: CarsBody) =>
     })
   ).json();
 
-export const startEngine = async (id: number) =>
+export const startEngine = async (id: number): Promise<Transform> =>
   (await fetch(`${engine}?id=${id}&status=started`)).json();
 
-export const stopEngine = async (id: number) =>
+export const stopEngine = async (id: number): Promise<Transform> =>
   (await fetch(`${engine}?id=${id}&status=stopped`)).json();
 
-export const drive = async (id: number) => {
+export const drive = async (id: number): Promise<Success> => {
   const res = await fetch(`${engine}?id=${id}&status=drive`).catch();
   return res.status !== 200 ? { success: false } : { ...(await res.json()) };
 };
-
-export type WinnersSort = 'id' | 'wins' | 'time';
-export type WinnersOrder = 'asc' | 'desc';
 
 const getSortOrder = (sort: WinnersSort, order: string) => {
   if (sort && order) return `&_sort=${sort}&_order=${order}`;
@@ -104,8 +82,8 @@ const getSortOrder = (sort: WinnersSort, order: string) => {
 export const getWinners = async ({
   page,
   limit = 10,
-  sort = 'time',
-  order = 'desc',
+  sort = WinnersSortCars.time,
+  order = WinnersSortOrderCars.desc,
 }: {
   page: number;
   limit: number;
@@ -128,16 +106,16 @@ export const getWinners = async ({
   };
 };
 
-export const getWinner = async (id: number) =>
+export const getWinner = async (id: number): Promise<WinnerBody> =>
   (await fetch(`${winners}/${id}`)).json();
 
-export const getWinnerStatus = async (id: number) =>
+export const getWinnerStatus = async (id: number): Promise<number> =>
   (await fetch(`${winners}/${id}`)).status;
 
-export const deleteWinner = async (id: number) =>
+export const deleteWinner = async (id: number): Promise<WinnerBody> =>
   (await fetch(`${winners}/${id}`, { method: 'DELETE' })).json();
 
-export const createWinner = async (body: WinnerBody) =>
+export const createWinner = async (body: WinnerBody): Promise<WinnerBody> =>
   (
     await fetch(winners, {
       method: 'POST',
@@ -148,7 +126,10 @@ export const createWinner = async (body: WinnerBody) =>
     })
   ).json();
 
-export const updateWinner = async (id: number, body: WinnerBody) =>
+export const updateWinner = async (
+  id: number,
+  body: WinnerBody,
+): Promise<WinnerBody> =>
   (
     await fetch(`${winners}/${id}`, {
       method: 'PUT',
@@ -165,7 +146,7 @@ export const saveWinner = async ({
 }: {
   id: number;
   time: number;
-}) => {
+}): Promise<void> => {
   const winnerStatus = await getWinnerStatus(id);
 
   if (winnerStatus === 404) {
@@ -195,6 +176,7 @@ const models = [
   'Aston Martin',
   'Porshe',
 ];
+
 const names = [
   'Model S',
   'CLK',
@@ -217,14 +199,19 @@ const getRandomName = () => {
 const getRandomColor = () => {
   const letters = '0123456789ABCDEF';
   let color = '#';
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 6; i += 1) {
     color += letters[Math.floor(Math.random() * 16)];
   }
 
   return color;
 };
 
-export const generateRandomCars = (count = 100) =>
-  new Array(count)
-    .fill(1)
-    .map(_ => ({ name: getRandomName(), color: getRandomColor() }));
+export const generateRandomCars = (count = 100): CarsBody[] => {
+  const result = [];
+
+  for (let i = count; i > 0; i -= 1) {
+    result.push({ name: getRandomName(), color: getRandomColor() });
+  }
+
+  return result;
+};

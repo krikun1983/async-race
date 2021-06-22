@@ -1,9 +1,9 @@
-import { BaseComponent } from '../base-components';
-import { Menu } from './menu/menu';
+import BaseComponent from '../base-components';
+import Menu from './menu/menu';
 import './header.scss';
-import { store } from '../../store';
+import store from '../../store';
 
-export class Header extends BaseComponent {
+export default class Header extends BaseComponent {
   private readonly menu: Menu;
 
   constructor() {
@@ -19,7 +19,7 @@ export class Header extends BaseComponent {
     return h1.element;
   }
 
-  static pageHidden() {
+  static pageHidden(): void {
     const btnPageGarage = document.querySelector('#garage-view');
     const PageGarage = document.querySelector('.garage-view');
     const btnPageWinners = document.querySelector('#winners-view');
