@@ -19,13 +19,13 @@
   cursor: pointer;
   padding: 6px 10px;
   font-size: 12px;
-  background-color: #e0eeff;
   font-weight: bold;
+  text-transform: uppercase;
+  background-color: #e0eeff;
   border-radius: 4px;
   border: none;
   border-bottom: 4px solid #16619c;
   border-left: 2px solid #16619c;
-  text-transform: uppercase;
 
   &:hover {
     background-color: #deffac;

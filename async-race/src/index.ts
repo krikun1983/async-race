@@ -14,6 +14,6 @@ window.onload = () => {
     store.getWinners().then(() => {
       new Garage().renderGarage();
     });
-    new WinnersView().renders();
+    new WinnersView().listenWinners();
   });
 };

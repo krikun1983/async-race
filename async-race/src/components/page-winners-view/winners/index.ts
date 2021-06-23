@@ -73,7 +73,7 @@ export default class WinnersView extends BaseComponent {
     </table>
   `;
 
-  updateStateWinners = async (): Promise<void> => {
+  private updateStateWinners = async (): Promise<void> => {
     await store.getWinners();
     if (store.winnersPage * 10 < Number(store.winnersCount)) {
       document.querySelector('.button-next')?.removeAttribute('disabled');
@@ -99,65 +99,47 @@ export default class WinnersView extends BaseComponent {
       this.renderWinners();
   };
 
-  renders(): void {
+  listenWinners(): void {
     document.body.addEventListener(
       'click',
       async (event: Event): Promise<void> => {
-        if (
-          (event.target as HTMLElement).classList.contains('btn-winners-view')
-        ) {
-          (document.querySelector('.winners') as HTMLElement).innerHTML = '';
-          this.element.innerHTML = '';
-          (document.querySelector('.winners') as HTMLElement).innerHTML =
-            this.renderWinners();
-        }
-        if ((event.target as HTMLElement).classList.contains('table-wins')) {
-          this.element.innerHTML = '';
-          await this.setSortOrder(WinnersSortCars.wins);
-          (document.querySelector('.winners') as HTMLElement).innerHTML =
-            this.renderWinners();
-        }
-        if ((event.target as HTMLElement).classList.contains('table-time')) {
-          this.element.innerHTML = '';
-          await this.setSortOrder(WinnersSortCars.time);
-          (document.querySelector('.winners') as HTMLElement).innerHTML =
-            this.renderWinners();
-        }
-        if (
-          (event.target as HTMLButtonElement).classList.contains('button-next')
-        ) {
-          switch (store.view) {
-            case ViewPage.winners: {
-              this.element.innerHTML = '';
-              store.winnersPage += 1;
-              await this.updateStateWinners();
-              (document.querySelector('.winners') as HTMLElement).innerHTML =
-                this.renderWinners();
-              break;
-            }
-            default:
-          }
-        }
-        if (
-          (event.target as HTMLButtonElement).classList.contains('button-prev')
-        ) {
-          switch (store.view) {
-            case ViewPage.winners: {
-              this.element.innerHTML = '';
-              store.winnersPage -= 1;
-              await this.updateStateWinners();
-              (document.querySelector('.winners') as HTMLElement).innerHTML =
-                this.renderWinners();
-              break;
-            }
-            default:
-          }
-        }
-        if ((event.target as HTMLElement).classList.contains('btn-update')) {
+        const btnEvent = event.target as HTMLButtonElement;
+        const elemEvent = event.target as HTMLElement;
+
+        const winnersPage = document.querySelector(
+          '.winners',
+        ) as HTMLDivElement;
+
+        if (btnEvent.classList.contains('btn-winners-view')) {
           this.element.innerHTML = '';
           await this.updateStateWinners();
-          (document.querySelector('.winners') as HTMLElement).innerHTML =
-            this.renderWinners();
+          winnersPage.innerHTML = this.renderWinners();
+        } else if (elemEvent.classList.contains('table-wins')) {
+          this.element.innerHTML = '';
+          await this.setSortOrder(WinnersSortCars.wins);
+          winnersPage.innerHTML = this.renderWinners();
+        } else if (elemEvent.classList.contains('table-time')) {
+          this.element.innerHTML = '';
+          await this.setSortOrder(WinnersSortCars.time);
+          winnersPage.innerHTML = this.renderWinners();
+        } else if (btnEvent.classList.contains('button-next')) {
+          if (store.view === ViewPage.winners) {
+            this.element.innerHTML = '';
+            store.winnersPage += 1;
+            await this.updateStateWinners();
+            winnersPage.innerHTML = this.renderWinners();
+          }
+        } else if (btnEvent.classList.contains('button-prev')) {
+          if (store.view === ViewPage.winners) {
+            this.element.innerHTML = '';
+            store.winnersPage -= 1;
+            await this.updateStateWinners();
+            winnersPage.innerHTML = this.renderWinners();
+          }
+        } else if (btnEvent.classList.contains('btn-update')) {
+          this.element.innerHTML = '';
+          await this.updateStateWinners();
+          winnersPage.innerHTML = this.renderWinners();
         }
       },
     );

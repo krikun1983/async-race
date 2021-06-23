@@ -1,7 +1,7 @@
 import BaseComponent from '../base-components';
 import Menu from './menu';
-import './header.scss';
 import store from '../../store';
+import './header.scss';
 
 export default class Header extends BaseComponent {
   private readonly menu: Menu;
