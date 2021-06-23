@@ -1,3 +1,12 @@
-import NotFound404Page from './404Page';
+import BaseComponent from '../base-components';
 
-export default NotFound404Page;
+export default class NotFound404Page extends BaseComponent {
+  constructor() {
+    super('section');
+    this.element.textContent = 'NOT FOUND 404';
+  }
+
+  render(): HTMLElement {
+    return this.element;
+  }
+}

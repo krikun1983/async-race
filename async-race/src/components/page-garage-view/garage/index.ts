@@ -9,7 +9,6 @@ import {
   stopEngine,
 } from '../../../app.api';
 import store from '../../../store';
-import GaragePartUpdate from './garagePartUpdate';
 import { AnimationCar, Car, GarageCar } from '../../../type';
 import ViewPage from '../../../constants/view-page';
 import './garage.scss';
@@ -21,14 +20,9 @@ let selectedCar: Car;
 let winner: Car | undefined;
 
 export default class Garage extends BaseComponent {
-  private readonly garagePartUpdate: GaragePartUpdate;
-
   constructor() {
     super('div', ['garage']);
-    this.garagePartUpdate = new GaragePartUpdate();
-    this.element.appendChild(this.garagePartUpdate.element);
     this.element.innerHTML = this.renderGarage();
-    this.garagePartUpdate.element.setAttribute('id', 'garage');
   }
 
   private renderCarImage = (color: string): string => `

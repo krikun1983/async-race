@@ -1,6 +1,6 @@
 import BaseComponent from '../../base-components';
-import FormCreate from './form-create/form-create';
-import FormUpdate from './form-update/form-update';
+import FormCreate from './form-create';
+import FormUpdate from './form-update';
 import './garage-forms.scss';
 
 export default class GarageForms extends BaseComponent {

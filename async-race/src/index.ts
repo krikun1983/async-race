@@ -1,5 +1,5 @@
 import App from './app';
-import Garage from './components/page-garage-view/garage/garage';
+import Garage from './components/page-garage-view/garage';
 import WinnersView from './components/page-winners-view/winners';
 import store from './store';
 import './style.scss';

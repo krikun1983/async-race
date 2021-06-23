@@ -1,6 +1,6 @@
 import Header from './components/header';
 import PageGarageView from './components/page-garage-view';
-import GarageButtonsNextPrev from './components/page-garage-view/garage/garageButtonsNextPrev/garageButtonsNextPrev';
+import GarageButtonsNextPrev from './components/page-garage-view/garage/garageButtonsNextPrev';
 import PageWinnersView from './components/page-winners-view';
 
 export default class App {
