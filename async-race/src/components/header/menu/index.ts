@@ -10,8 +10,8 @@ export default class Menu extends BaseComponent {
 
   private static renderButtonToGarage() {
     const button = new BaseComponent('button', [
-      'btn-menu',
-      'btn-menu-navigate',
+      'btn-controls',
+      'btn-garage-view',
       'btn-menu-active',
     ]);
     button.element.innerHTML = 'to garage';
@@ -21,8 +21,7 @@ export default class Menu extends BaseComponent {
 
   private static renderButtonToWinners() {
     const button = new BaseComponent('button', [
-      'btn-menu',
-      'btn-menu-navigate',
+      'btn-controls',
       'btn-winners-view',
     ]);
     button.element.innerHTML = 'to winners';

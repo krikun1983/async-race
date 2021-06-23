@@ -280,6 +280,8 @@ export default class Garage extends BaseComponent {
           resultRace.innerHTML = '';
           btnRace.removeAttribute('disabled');
           btnNext.removeAttribute('disabled');
+        } else if (btnEvent.classList.contains('btn-garage-view')) {
+          await this.updateStateGarage();
         } else if (btnEvent.classList.contains('btn-race')) {
           btnEvent.setAttribute('disabled', '');
           btnGenerate.setAttribute('disabled', '');
@@ -323,11 +325,6 @@ export default class Garage extends BaseComponent {
             });
           }
           await this.updateStateGarage();
-          await this.updateStateWinners();
-          btnNext.removeAttribute('disabled');
-          if (store.carsPage > 1) {
-            btnNext.removeAttribute('disabled');
-          }
         } else if (btnEvent.classList.contains('btn-reset')) {
           btnEvent.setAttribute('disabled', '');
           store.cars.map(({ id }) => this.stopDriving(id));

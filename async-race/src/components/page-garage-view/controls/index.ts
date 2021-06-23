@@ -3,11 +3,11 @@ import './controls.scss';
 
 export default class Controls extends BaseComponent {
   constructor() {
-    super('div', ['conrols']);
+    super('div', ['controls']);
     this.element.innerHTML = `
-    <button class="btn btn-race">Race</button>
-    <button class="btn btn-reset" disabled>Reset</button>
-    <button class="btn btn-generate">Generate cars</button>
+    <button class="btn-controls btn-race">Race</button>
+    <button class="btn-controls btn-reset" disabled>Reset</button>
+    <button class="btn-controls btn-generate">Generate cars</button>
     `;
   }
 }

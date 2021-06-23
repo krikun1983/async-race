@@ -14,22 +14,3 @@
   width: 50px;
   height: 25px;
 }
-
-.btn-update {
-  cursor: pointer;
-  padding: 6px 10px;
-  font-size: 12px;
-  font-weight: bold;
-  text-transform: uppercase;
-  background-color: #e0eeff;
-  border-radius: 4px;
-  border: none;
-  border-bottom: 4px solid #16619c;
-  border-left: 2px solid #16619c;
-
-  &:hover {
-    background-color: #deffac;
-    border-bottom: 4px solid #77c404;
-    border-left: 2px solid #77c404;
-  }
-}

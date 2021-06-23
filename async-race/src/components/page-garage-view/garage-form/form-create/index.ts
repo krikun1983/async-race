@@ -7,7 +7,7 @@ export default class FormCreate extends BaseComponent {
     this.element.innerHTML = `
       <input class="create-name" type="text" placeholder="Car name">
       <input class="create-color" type="color" value="#ffffff">
-      <button class="btn-create" type="button">Create</button>
+      <button class="btn-controls btn-create" type="button">Create</button>
     `;
   }
 }
