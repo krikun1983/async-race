@@ -3,6 +3,7 @@ import store from '../../../store';
 import { WinnersSort } from '../../../type';
 import WinnersSortCars from '../../../constants/winners-sort-cars';
 import WinnersSortOrderCars from '../../../constants/winners-sort-order-cars';
+import ViewPage from '../../../constants/view-page';
 
 export default class WinnersView extends BaseComponent {
   constructor() {
@@ -126,7 +127,7 @@ export default class WinnersView extends BaseComponent {
           (event.target as HTMLButtonElement).classList.contains('button-next')
         ) {
           switch (store.view) {
-            case 'winners': {
+            case ViewPage.winners: {
               this.element.innerHTML = '';
               store.winnersPage += 1;
               await this.updateStateWinners();
@@ -141,7 +142,7 @@ export default class WinnersView extends BaseComponent {
           (event.target as HTMLButtonElement).classList.contains('button-prev')
         ) {
           switch (store.view) {
-            case 'winners': {
+            case ViewPage.winners: {
               this.element.innerHTML = '';
               store.winnersPage -= 1;
               await this.updateStateWinners();

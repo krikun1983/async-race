@@ -9,6 +9,7 @@ import {
   updateCar,
   updateWinner,
 } from './app.api';
+import ViewPage from './constants/view-page';
 import WinnersSortCars from './constants/winners-sort-cars';
 import WinnersSortOrderCars from './constants/winners-sort-order-cars';
 import { CarsBody, Store, WinnerBody } from './type';
@@ -66,7 +67,7 @@ const store: Store = {
   },
   sortBy: WinnersSortCars.wins,
   sortOrder: WinnersSortOrderCars.desc,
-  view: 'garage',
+  view: ViewPage.garage,
 };
 
 export default store;
