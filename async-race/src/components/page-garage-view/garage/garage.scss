@@ -26,16 +26,16 @@ h3 {
 }
 
 .button {
-  font-size: 15px;
-  line-height: 15px;
-  letter-spacing: 0.25px;
   cursor: pointer;
-  background: none;
-  border: 2px red solid;
-  border-radius: 8px;
   margin-right: 10px;
   height: 25px;
   width: 25px;
+  font-size: 15px;
+  line-height: 15px;
+  letter-spacing: 0.25px;
+  background: none;
+  border: 2px red solid;
+  border-radius: 8px;
 }
 
 .select-button {
@@ -50,6 +50,7 @@ h3 {
 .remove-button {
   color: green;
   border-color: green;
+
   &:after {
     content: '✘';
   }
@@ -91,7 +92,8 @@ h3 {
   align-items: center;
 }
 
-.icon {
+.btn-icon {
+  cursor: pointer;
   font-family: Roboto, Verdana, Geneva, sans-serif;
   font-style: normal;
   font-weight: 500;
@@ -99,7 +101,6 @@ h3 {
   line-height: 15px;
   letter-spacing: 0.25px;
   color: red;
-  cursor: pointer;
   background: none;
   border: 2px red solid;
   border-radius: 8px;
@@ -108,18 +109,18 @@ h3 {
   width: 25px;
 }
 
-.icon-enable {
+.btn-icon-enable {
   color: #adff2f;
   border-color: #adff2f;
 }
 
-.icon:disabled {
+.btn-icon:disabled {
   color: #555;
   border-color: #555;
   cursor: not-allowed;
 }
 
-.icon.enabling {
+.btn-icon.enabling {
   color: rgb(107, 176, 255);
 }
 

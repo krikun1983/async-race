@@ -9,7 +9,7 @@ import {
   stopEngine,
 } from '../../../app.api';
 import store from '../../../store';
-import { AnimationCar, Car, GarageCar } from '../../../type';
+import { AnimationCar, Car, GarageCar, WinnerBody } from '../../../type';
 import ViewPage from '../../../constants/view-page';
 import './garage.scss';
 
@@ -64,9 +64,9 @@ export default class Garage extends BaseComponent {
     <div class="road">
       <div class="launch-pad">
         <div class="control-panel">
-          <button class="icon start-engine-button icon-enable"
+          <button class="btn-icon start-engine-button btn-icon-enable"
           id="start-engine-car-${id}">A</button>
-          <button class="icon stop-engine-button icon-disable"
+          <button class="btn-icon stop-engine-button btn-icon-disable"
           id="stop-engine-car-${id}"
           ${isEngineStarted ? 'disabled' : ''}>B</button>
         </div>
@@ -185,31 +185,25 @@ export default class Garage extends BaseComponent {
   };
 
   updateStateGarage = async (): Promise<void> => {
+    const btnNext = document.querySelector('.button-next') as HTMLButtonElement;
+    const btnPrev = document.querySelector('.button-prev') as HTMLButtonElement;
     await store.getCars();
-    if (store.carsPage * 7 < Number(store.carsCount)) {
-      document.querySelector('.button-next')?.removeAttribute('disabled');
-    } else {
-      document.querySelector('.button-next')?.setAttribute('disabled', '');
-    }
-    if (store.carsPage > 1) {
-      document.querySelector('.button-prev')?.removeAttribute('disabled');
-    } else {
-      document.querySelector('.button-prev')?.setAttribute('disabled', '');
-    }
+    btnNext.disabled = !(store.carsPage * 7 < Number(store.carsCount));
+    btnPrev.disabled = store.carsPage === 1;
   };
 
-  private updateStateWinners = async (): Promise<void> => {
-    await store.getWinners();
-    if (store.winnersPage * 10 < Number(store.winnersCount)) {
-      document.querySelector('.button-next')?.removeAttribute('disabled');
-    } else {
-      document.querySelector('.button-next')?.setAttribute('disabled', '');
-    }
-    if (store.winnersPage > 1) {
-      document.querySelector('.button-prev')?.removeAttribute('disabled');
-    } else {
-      document.querySelector('.button-prev')?.setAttribute('disabled', '');
-    }
+  private disabledAdd = (...args: HTMLButtonElement[]): void => {
+    args.forEach((element: HTMLButtonElement) => {
+      const elem = element;
+      elem.disabled = true;
+    });
+  };
+
+  private disabledRemove = (...args: HTMLButtonElement[]): void => {
+    args.forEach((element: HTMLButtonElement) => {
+      const elem = element;
+      elem.disabled = false;
+    });
   };
 
   listen(): void {
@@ -264,7 +258,7 @@ export default class Garage extends BaseComponent {
           updateColorInput.value = selectedCar.color;
           updateNameInput.removeAttribute('disabled');
           updateColorInput.removeAttribute('disabled');
-          btnUpdate.removeAttribute('disabled');
+          this.disabledRemove(btnUpdate);
         } else if (btnEvent.classList.contains('remove-button')) {
           const id = +btnEvent.id.split('remove-car-')[1];
           this.element.innerHTML = '';
@@ -274,19 +268,14 @@ export default class Garage extends BaseComponent {
           garagePage.innerHTML = this.renderGarage();
         } else if (btnEvent.classList.contains('btn-winners-view')) {
           store.cars.map(({ id }) => this.stopDriving(id));
-          btnReset.setAttribute('disabled', '');
-          btnGenerate.removeAttribute('disabled');
-          btnCreate.removeAttribute('disabled');
+          this.disabledAdd(btnReset);
+          this.disabledRemove(btnGenerate, btnCreate, btnRace, btnNext);
           resultRace.innerHTML = '';
-          btnRace.removeAttribute('disabled');
-          btnNext.removeAttribute('disabled');
         } else if (btnEvent.classList.contains('btn-garage-view')) {
           await this.updateStateGarage();
         } else if (btnEvent.classList.contains('btn-race')) {
-          btnEvent.setAttribute('disabled', '');
-          btnGenerate.setAttribute('disabled', '');
-          btnCreate.setAttribute('disabled', '');
-          btnReset.removeAttribute('disabled');
+          this.disabledAdd(btnEvent, btnGenerate, btnCreate);
+          this.disabledRemove(btnReset);
           const promises = store.cars.map(({ id }) => this.startDriving(id));
           const result = await Promise.all(promises);
           let resultMin = 10000;
@@ -306,7 +295,7 @@ export default class Garage extends BaseComponent {
           }
           const time = +(resultMin / 1000).toFixed(2);
 
-          const winnerSave = {
+          const winnerSave: WinnerBody = {
             id: winner.id,
             wins: 1,
             time,
@@ -326,12 +315,10 @@ export default class Garage extends BaseComponent {
           }
           await this.updateStateGarage();
         } else if (btnEvent.classList.contains('btn-reset')) {
-          btnEvent.setAttribute('disabled', '');
+          this.disabledAdd(btnEvent);
           store.cars.map(({ id }) => this.stopDriving(id));
-          btnGenerate.removeAttribute('disabled');
-          btnCreate.removeAttribute('disabled');
+          this.disabledRemove(btnGenerate, btnCreate, btnRace);
           resultRace.innerHTML = '';
-          btnRace.removeAttribute('disabled');
         } else if (
           (event.target as HTMLElement).classList.contains('btn-update')
         ) {
@@ -346,7 +333,7 @@ export default class Garage extends BaseComponent {
             updateNameInput.value = '';
             updateNameInput.setAttribute('disabled', '');
             updateColorInput.setAttribute('disabled', '');
-            btnUpdate.setAttribute('disabled', '');
+            this.disabledAdd(btnUpdate);
             updateColorInput.value = '#ffffff';
           }
         } else if (btnEvent.classList.contains('btn-create')) {
@@ -360,14 +347,14 @@ export default class Garage extends BaseComponent {
           createNameInput.value = '';
           createColorInput.value = '#ffffff';
         } else if (btnEvent.classList.contains('btn-generate')) {
-          btnEvent.setAttribute('disabled', '');
+          this.disabledAdd(btnEvent);
           this.element.innerHTML = '';
           const cars = generateRandomCars(100);
 
           await Promise.all(cars.map(async c => store.createCar(c)));
           await this.updateStateGarage();
           garagePage.innerHTML = this.renderGarage();
-          btnEvent.removeAttribute('disabled');
+          this.disabledRemove(btnEvent);
         } else if (btnEvent.classList.contains('button-next')) {
           if (store.view === ViewPage.garage) {
             this.element.innerHTML = '';

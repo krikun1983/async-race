@@ -1,15 +1,6 @@
 import WinnersSortCars from './constants/winners-sort-cars';
 import WinnersSortOrderCars from './constants/winners-sort-order-cars';
 
-export type Component = {
-  render(): HTMLElement;
-};
-
-export interface Route {
-  path: string;
-  Component: new () => Component;
-}
-
 export type WinnersSort = WinnersSortCars.wins | WinnersSortCars.time;
 
 export type WinnersOrder = WinnersSortOrderCars.asc | WinnersSortOrderCars.desc;
@@ -21,15 +12,15 @@ export type Winner = {
   time: number;
 };
 
+export type Winners = {
+  items: Winner[];
+  count: string | null;
+};
+
 export type WinnerBody = {
   id: number;
   wins: number;
   time: number;
-};
-
-export type Winners = {
-  items: Winner[];
-  count: string | null;
 };
 
 export type Transform = {

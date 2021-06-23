@@ -74,17 +74,11 @@ export default class WinnersView extends BaseComponent {
   `;
 
   private updateStateWinners = async (): Promise<void> => {
+    const btnNext = document.querySelector('.button-next') as HTMLButtonElement;
+    const btnPrev = document.querySelector('.button-prev') as HTMLButtonElement;
     await store.getWinners();
-    if (store.winnersPage * 10 < Number(store.winnersCount)) {
-      document.querySelector('.button-next')?.removeAttribute('disabled');
-    } else {
-      document.querySelector('.button-next')?.setAttribute('disabled', '');
-    }
-    if (store.winnersPage > 1) {
-      document.querySelector('.button-prev')?.removeAttribute('disabled');
-    } else {
-      document.querySelector('.button-prev')?.setAttribute('disabled', '');
-    }
+    btnNext.disabled = !(store.winnersPage * 10 < Number(store.winnersCount));
+    btnPrev.disabled = store.winnersPage === 1;
   };
 
   setSortOrder = async (sortBy: WinnersSort): Promise<void> => {
