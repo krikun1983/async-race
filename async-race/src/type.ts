@@ -57,6 +57,41 @@ export type Cars = {
   count: string | null;
 };
 
-export type Animat = {
+export type AnimationCar = {
   animation: { [key: number]: { id: number } };
+};
+
+export type GarageCar = {
+  id: number;
+  name: string;
+  color: string;
+  isEngineStarted?: boolean;
+};
+
+export type UpdateCar = {
+  id: number;
+  name: string;
+  color: string;
+};
+
+export type Store = {
+  carsPage: number;
+  winnersPage: number;
+  cars: Car[];
+  winners: Winner[];
+  carsCount: string | null;
+  winnersCount: string | null;
+  limit: number;
+  getCars: () => Promise<void>;
+  deleteCar: (id: number) => Promise<void>;
+  createCar(body: CarsBody): Promise<void>;
+  updateCar: (id: number, body: CarsBody) => Promise<void>;
+  getWinners: () => Promise<void>;
+  getWinnerStatus: (id: number) => Promise<void>;
+  deleteWinner: (id: number) => Promise<void>;
+  createWinner: (body: WinnerBody) => Promise<void>;
+  updateWinner: (id: number, body: WinnerBody) => Promise<void>;
+  sortBy: WinnersSort;
+  sortOrder: WinnersOrder;
+  view: string;
 };

@@ -11,36 +11,7 @@ import {
 } from './app.api';
 import WinnersSortCars from './constants/winners-sort-cars';
 import WinnersSortOrderCars from './constants/winners-sort-order-cars';
-import {
-  Car,
-  CarsBody,
-  Winner,
-  WinnerBody,
-  WinnersOrder,
-  WinnersSort,
-} from './type';
-
-type Store = {
-  carsPage: number;
-  winnersPage: number;
-  cars: Car[];
-  winners: Winner[];
-  carsCount: string | null;
-  winnersCount: string | null;
-  limit: number;
-  getCars: () => Promise<void>;
-  deleteCar: (id: number) => Promise<void>;
-  createCar(body: CarsBody): Promise<void>;
-  updateCar: (id: number, body: CarsBody) => Promise<void>;
-  getWinners: () => Promise<void>;
-  getWinnerStatus: (id: number) => Promise<void>;
-  deleteWinner: (id: number) => Promise<void>;
-  createWinner: (body: WinnerBody) => Promise<void>;
-  updateWinner: (id: number, body: WinnerBody) => Promise<void>;
-  sortBy: WinnersSort;
-  sortOrder: WinnersOrder;
-  view: string;
-};
+import { CarsBody, Store, WinnerBody } from './type';
 
 const store: Store = {
   carsPage: 1,

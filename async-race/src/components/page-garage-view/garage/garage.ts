@@ -12,27 +12,16 @@ import {
 import store from '../../../store';
 import GaragePartUpdate from './garagePartUpdate';
 import WinnersView from '../../page-winners-view/winners';
-import { Animat } from '../../../type';
+import { AnimationCar, Car, GarageCar } from '../../../type';
 import './garage.scss';
 
-export const animat: Animat = {
+export const animationCar: AnimationCar = {
   animation: {},
 };
 
-export interface GarageCar {
-  id: number;
-  name: string;
-  color: string;
-  isEngeneStarted?: boolean;
-}
+let selectedCar: Car;
 
-export type UpdateCar = {
-  id?: number;
-  name?: string;
-  color?: string;
-};
-
-let selectedCar: { name: string; color: string; id: number } | null = null;
+let winner: Car | undefined;
 
 export default class Garage extends BaseComponent {
   private readonly garagePartUpdate: GaragePartUpdate;
@@ -51,8 +40,8 @@ export default class Garage extends BaseComponent {
   private renderCarImage = (color: string): string => `
     <?xml version="1.0" encoding="iso-8859-1"?>
   <!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-  <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+  <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+  x="0px" y="0px"
     viewBox="0 0 612.001 612.001" style="fill: ${color};" width="40" xml:space="preserve">
   <g>
     <path d="M589.333,276.033c-11.234-3.756-89.378-20.834-89.378-20.834s-144.86-82.375-162.245-82.375s-136.639,
@@ -77,7 +66,7 @@ export default class Garage extends BaseComponent {
     id,
     name,
     color,
-    isEngeneStarted = true,
+    isEngineStarted = true,
   }: GarageCar): string => `
     <div class="general-buttons">
       <button class="button select-button" id="select-car-${id}"></button>
@@ -91,7 +80,7 @@ export default class Garage extends BaseComponent {
           id="start-engine-car-${id}">A</button>
           <button class="icon stop-engine-button icon-disable"
           id="stop-engine-car-${id}"
-          ${isEngeneStarted ? 'disabled' : ''}>B</button>
+          ${isEngineStarted ? 'disabled' : ''}>B</button>
         </div>
         <div class="car" id="car-${id}">
           ${this.renderCarImage(color)}
@@ -172,11 +161,11 @@ export default class Garage extends BaseComponent {
     if (car && flag) {
       const htmlDistance =
         Math.floor(this.getDistanceBetweenElements(car, flag)) + 10;
-      animat.animation[id] = this.animation(car, htmlDistance, time);
+      animationCar.animation[id] = this.animation(car, htmlDistance, time);
     }
 
     const { success } = await drive(id);
-    if (!success) window.cancelAnimationFrame(animat.animation[id].id);
+    if (!success) window.cancelAnimationFrame(animationCar.animation[id].id);
 
     return { success, id, time };
   };
@@ -196,8 +185,8 @@ export default class Garage extends BaseComponent {
       car.style.transform = 'translateX(0)';
     }
 
-    if (animat.animation[id])
-      window.cancelAnimationFrame(animat.animation[id].id);
+    if (animationCar.animation[id])
+      window.cancelAnimationFrame(animationCar.animation[id].id);
   };
 
   updateStateGarage = async (): Promise<void> => {
@@ -252,9 +241,9 @@ export default class Garage extends BaseComponent {
         if (eventBtn.classList.contains('select-button')) {
           selectedCar = await getCar(+eventBtn.id.split('select-car-')[1]);
           (document.getElementById('update-name') as HTMLInputElement).value =
-            selectedCar!.name;
+            selectedCar.name;
           (document.getElementById('update-color') as HTMLInputElement).value =
-            selectedCar!.color;
+            selectedCar.color;
           (
             document.getElementById('update-name') as HTMLInputElement
           ).disabled = false;
@@ -318,12 +307,14 @@ export default class Garage extends BaseComponent {
             }
           });
 
-          const winner = store.cars.find(car => car.id === carWinner);
-
+          winner = store.cars.find(car => car.id === carWinner);
+          if (!winner) {
+            return;
+          }
           const time = +(resultMin / 1000).toFixed(2);
 
           const winnerSave = {
-            id: winner!.id,
+            id: winner.id,
             wins: 1,
             time,
           };
@@ -331,7 +322,7 @@ export default class Garage extends BaseComponent {
           const resultRase = document.querySelector('.result');
           (
             resultRase as HTMLDivElement
-          ).innerHTML = `Победил <span>${winner?.name}</span>. Его время <span>${winnerSave.time}</span> сек`;
+          ).innerHTML = `Win <span>${winner.name}</span>. His time <span>${winnerSave.time}</span> сек`;
           const winnerStatus = await getWinnerStatus(winnerSave.id);
           if (winnerStatus === 404) {
             await store.createWinner(winnerSave);
@@ -356,8 +347,6 @@ export default class Garage extends BaseComponent {
         }
         if (eventBtn.classList.contains('btn-reset')) {
           eventBtn.setAttribute('disabled', '');
-          (document.querySelector('.result') as HTMLDivElement).innerHTML =
-            'Привет';
           store.cars.map(({ id }) => this.stopDriving(id));
           (
             document.querySelector('.btn-generate') as HTMLButtonElement
@@ -383,7 +372,7 @@ export default class Garage extends BaseComponent {
               color: updateColor.value,
             };
             this.element.innerHTML = '';
-            await store.updateCar(selectedCar!.id, car);
+            await store.updateCar(selectedCar.id, car);
             (document.querySelector('.garage') as HTMLDivElement).innerHTML =
               this.renderGarage();
             updateName.value = '';
@@ -393,7 +382,6 @@ export default class Garage extends BaseComponent {
               document.getElementById('update-submit') as HTMLButtonElement
             ).disabled = true;
             updateColor.value = '#ffffff';
-            selectedCar = null;
           }
         }
         if (eventBtn.classList.contains('btn-create')) {

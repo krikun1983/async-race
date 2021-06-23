@@ -106,10 +106,10 @@ export const getWinners = async ({
   };
 };
 
-export const getWinner = async (id: number): Promise<WinnerBody> =>
+export const getWinner = async (id?: number): Promise<WinnerBody> =>
   (await fetch(`${winners}/${id}`)).json();
 
-export const getWinnerStatus = async (id: number): Promise<number> =>
+export const getWinnerStatus = async (id?: number): Promise<number> =>
   (await fetch(`${winners}/${id}`)).status;
 
 export const deleteWinner = async (id: number): Promise<WinnerBody> =>
@@ -167,14 +167,14 @@ export const saveWinner = async ({
 
 const models = [
   'Tesla',
-  'Mersedes',
+  'Mercedes',
   'BMW',
   'Toyota',
-  'Zhiguli',
-  'Moskvich',
+  'Volvo',
+  'Nissan',
   'Opel',
   'Aston Martin',
-  'Porshe',
+  'Porsche',
 ];
 
 const names = [
@@ -182,11 +182,11 @@ const names = [
   'CLK',
   '7',
   'Camry',
-  'Combi',
+  'Sonata',
   '9',
-  'Corsa',
+  'Transit',
   'DB9',
-  'Cayene',
+  'Cayman',
 ];
 
 const getRandomName = () => {
