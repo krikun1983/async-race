@@ -1,9 +1,8 @@
 import BaseComponent from '../../base-components';
 import store from '../../../store';
 import { WinnersSort } from '../../../type';
-import WinnersSortCars from '../../../constants/winners-sort-cars';
-import WinnersSortOrderCars from '../../../constants/winners-sort-order-cars';
 import ViewPage from '../../../constants/view-page';
+import { WinnersSortCars, WinnersSortOrderCars } from '../../../constants/winners-sorts';
 
 export default class WinnersView extends BaseComponent {
   constructor() {
@@ -44,15 +43,11 @@ export default class WinnersView extends BaseComponent {
         <th>Car</th>
         <th>Name</th>
         <th class="table-button
-        table-wins ${
-          store.sortBy === WinnersSortCars.wins ? store.sortOrder : ''
-        }
+        table-wins ${store.sortBy === WinnersSortCars.wins ? store.sortOrder : ''}
         id="sort-by-wins">Wins</th>
         <th
         class="table-button
-        table-time ${
-          store.sortBy === WinnersSortCars.time ? store.sortOrder : ''
-        }
+        table-time ${store.sortBy === WinnersSortCars.time ? store.sortOrder : ''}
         id="sort-by-time">Best time (seconds)</th>
       </thead>
       <tbody>
@@ -83,59 +78,50 @@ export default class WinnersView extends BaseComponent {
 
   setSortOrder = async (sortBy: WinnersSort): Promise<void> => {
     store.sortOrder =
-      store.sortOrder === WinnersSortOrderCars.asc
-        ? WinnersSortOrderCars.desc
-        : WinnersSortOrderCars.asc;
+      store.sortOrder === WinnersSortOrderCars.asc ? WinnersSortOrderCars.desc : WinnersSortOrderCars.asc;
     store.sortBy = sortBy;
     this.element.innerHTML = '';
     await this.updateStateWinners();
-    (document.querySelector('.winners') as HTMLElement).innerHTML =
-      this.renderWinners();
+    (document.querySelector('.winners') as HTMLElement).innerHTML = this.renderWinners();
   };
 
   listenWinners(): void {
-    document.body.addEventListener(
-      'click',
-      async (event: Event): Promise<void> => {
-        const btnEvent = event.target as HTMLButtonElement;
-        const elemEvent = event.target as HTMLElement;
+    document.body.addEventListener('click', async (event: Event): Promise<void> => {
+      const btnEvent = event.target as HTMLButtonElement | HTMLElement;
 
-        const winnersPage = document.querySelector(
-          '.winners',
-        ) as HTMLDivElement;
+      const winnersPage = document.querySelector('.winners') as HTMLDivElement;
 
-        if (btnEvent.classList.contains('btn-winners-view')) {
+      if (btnEvent.classList.contains('btn-winners-view')) {
+        this.element.innerHTML = '';
+        await this.updateStateWinners();
+        winnersPage.innerHTML = this.renderWinners();
+      } else if (btnEvent.classList.contains('table-wins')) {
+        this.element.innerHTML = '';
+        await this.setSortOrder(WinnersSortCars.wins);
+        winnersPage.innerHTML = this.renderWinners();
+      } else if (btnEvent.classList.contains('table-time')) {
+        this.element.innerHTML = '';
+        await this.setSortOrder(WinnersSortCars.time);
+        winnersPage.innerHTML = this.renderWinners();
+      } else if (btnEvent.classList.contains('button-next')) {
+        if (store.view === ViewPage.winners) {
           this.element.innerHTML = '';
-          await this.updateStateWinners();
-          winnersPage.innerHTML = this.renderWinners();
-        } else if (elemEvent.classList.contains('table-wins')) {
-          this.element.innerHTML = '';
-          await this.setSortOrder(WinnersSortCars.wins);
-          winnersPage.innerHTML = this.renderWinners();
-        } else if (elemEvent.classList.contains('table-time')) {
-          this.element.innerHTML = '';
-          await this.setSortOrder(WinnersSortCars.time);
-          winnersPage.innerHTML = this.renderWinners();
-        } else if (btnEvent.classList.contains('button-next')) {
-          if (store.view === ViewPage.winners) {
-            this.element.innerHTML = '';
-            store.winnersPage += 1;
-            await this.updateStateWinners();
-            winnersPage.innerHTML = this.renderWinners();
-          }
-        } else if (btnEvent.classList.contains('button-prev')) {
-          if (store.view === ViewPage.winners) {
-            this.element.innerHTML = '';
-            store.winnersPage -= 1;
-            await this.updateStateWinners();
-            winnersPage.innerHTML = this.renderWinners();
-          }
-        } else if (btnEvent.classList.contains('btn-update')) {
-          this.element.innerHTML = '';
+          store.winnersPage += 1;
           await this.updateStateWinners();
           winnersPage.innerHTML = this.renderWinners();
         }
-      },
-    );
+      } else if (btnEvent.classList.contains('button-prev')) {
+        if (store.view === ViewPage.winners) {
+          this.element.innerHTML = '';
+          store.winnersPage -= 1;
+          await this.updateStateWinners();
+          winnersPage.innerHTML = this.renderWinners();
+        }
+      } else if (btnEvent.classList.contains('btn-update')) {
+        this.element.innerHTML = '';
+        await this.updateStateWinners();
+        winnersPage.innerHTML = this.renderWinners();
+      }
+    });
   }
 }

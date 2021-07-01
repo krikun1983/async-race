@@ -1,31 +1,15 @@
-import WinnersSortCars from './constants/winners-sort-cars';
-import WinnersSortOrderCars from './constants/winners-sort-order-cars';
-import {
-  Car,
-  Cars,
-  CarsBody,
-  Success,
-  Transform,
-  WinnerBody,
-  Winners,
-  WinnersOrder,
-  WinnersSort,
-} from './type';
+import { WinnersSortCars, WinnersSortOrderCars } from './constants/winners-sorts';
 
-const base = 'http://127.0.0.1:3000';
+import { Car, Cars, CarsBody, Success, Transform, WinnerBody, Winners, WinnersOrder, WinnersSort } from './type';
 
-const garage = `${base}/garage`;
-const engine = `${base}/engine`;
-const winners = `${base}/winners`;
+const BASE_URL = 'http://127.0.0.1:3000';
 
-export const getCars = async ({
-  page = 1,
-  limit = 7,
-}: {
-  page: number;
-  limit?: number;
-}): Promise<Cars> => {
-  const response = await fetch(`${garage}?_page=${page}&_limit=${limit}`);
+const GARAGE_API = `${BASE_URL}/garage`;
+const ENGINE_API = `${BASE_URL}/engine`;
+const WINNERS_API = `${BASE_URL}/winners`;
+
+export const getCars = async ({ page = 1, limit = 7 }: { page: number; limit?: number }): Promise<Cars> => {
+  const response = await fetch(`${GARAGE_API}?_page=${page}&_limit=${limit}`);
 
   return {
     items: await response.json(),
@@ -34,29 +18,29 @@ export const getCars = async ({
 };
 
 export const getCar = async (id: number): Promise<Car> => {
-  return (await fetch(`${garage}/${id}`)).json();
+  return (await fetch(`${GARAGE_API}/${id}`)).json();
 };
 
-export const createCar = async (body: CarsBody): Promise<Car> => {
-  const response = await fetch(`${garage}`, {
+export const createCar = async (bodyCar: CarsBody): Promise<Car> => {
+  const response = await fetch(`${GARAGE_API}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify(bodyCar),
   });
   const car = await response.json();
   return car;
 };
 
 export const deleteCar = async (id: number): Promise<Car> =>
-  (await fetch(`${garage}/${id}`, { method: 'DELETE' })).json();
+  (await fetch(`${GARAGE_API}/${id}`, { method: 'DELETE' })).json();
 
-export const updateCar = async (id: number, body: CarsBody): Promise<Car> =>
+export const updateCar = async (id: number, bodyCar: CarsBody): Promise<Car> =>
   (
-    await fetch(`${garage}/${id}`, {
+    await fetch(`${GARAGE_API}/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(body),
+      body: JSON.stringify(bodyCar),
       headers: {
         'Content-Type': 'application/json',
       },
@@ -64,19 +48,18 @@ export const updateCar = async (id: number, body: CarsBody): Promise<Car> =>
   ).json();
 
 export const startEngine = async (id: number): Promise<Transform> =>
-  (await fetch(`${engine}?id=${id}&status=started`)).json();
+  (await fetch(`${ENGINE_API}?id=${id}&status=started`)).json();
 
 export const stopEngine = async (id: number): Promise<Transform> =>
-  (await fetch(`${engine}?id=${id}&status=stopped`)).json();
+  (await fetch(`${ENGINE_API}?id=${id}&status=stopped`)).json();
 
 export const drive = async (id: number): Promise<Success> => {
-  const res = await fetch(`${engine}?id=${id}&status=drive`).catch();
+  const res = await fetch(`${ENGINE_API}?id=${id}&status=drive`).catch();
   return res.status !== 200 ? { success: false } : { ...(await res.json()) };
 };
 
 const getSortOrder = (sort: WinnersSort, order: string) => {
-  if (sort && order) return `&_sort=${sort}&_order=${order}`;
-  return '';
+  return sort && order ? `&_sort=${sort}&_order=${order}` : '';
 };
 
 export const getWinners = async ({
@@ -90,9 +73,7 @@ export const getWinners = async ({
   sort: WinnersSort;
   order: WinnersOrder;
 }): Promise<Winners> => {
-  const response = await fetch(
-    `${winners}?_page=${page}&_limit=${limit}${getSortOrder(sort, order)}`,
-  );
+  const response = await fetch(`${WINNERS_API}?_page=${page}&_limit=${limit}${getSortOrder(sort, order)}`);
   const items = await response.json();
 
   return {
@@ -106,47 +87,36 @@ export const getWinners = async ({
   };
 };
 
-export const getWinner = async (id?: number): Promise<WinnerBody> =>
-  (await fetch(`${winners}/${id}`)).json();
+export const getWinner = async (id?: number): Promise<WinnerBody> => (await fetch(`${WINNERS_API}/${id}`)).json();
 
-export const getWinnerStatus = async (id?: number): Promise<number> =>
-  (await fetch(`${winners}/${id}`)).status;
+export const getWinnerStatus = async (id?: number): Promise<number> => (await fetch(`${WINNERS_API}/${id}`)).status;
 
 export const deleteWinner = async (id: number): Promise<WinnerBody> =>
-  (await fetch(`${winners}/${id}`, { method: 'DELETE' })).json();
+  (await fetch(`${WINNERS_API}/${id}`, { method: 'DELETE' })).json();
 
-export const createWinner = async (body: WinnerBody): Promise<WinnerBody> =>
+export const createWinner = async (bodyCar: WinnerBody): Promise<WinnerBody> =>
   (
-    await fetch(winners, {
+    await fetch(WINNERS_API, {
       method: 'POST',
-      body: JSON.stringify(body),
+      body: JSON.stringify(bodyCar),
       headers: {
         'Content-Type': 'application/json',
       },
     })
   ).json();
 
-export const updateWinner = async (
-  id: number,
-  body: WinnerBody,
-): Promise<WinnerBody> =>
+export const updateWinner = async (id: number, bodyCar: WinnerBody): Promise<WinnerBody> =>
   (
-    await fetch(`${winners}/${id}`, {
+    await fetch(`${WINNERS_API}/${id}`, {
       method: 'PUT',
-      body: JSON.stringify(body),
+      body: JSON.stringify(bodyCar),
       headers: {
         'Content-Type': 'application/json',
       },
     })
   ).json();
 
-export const saveWinner = async ({
-  id,
-  time,
-}: {
-  id: number;
-  time: number;
-}): Promise<void> => {
+export const saveWinner = async ({ id, time }: { id: number; time: number }): Promise<void> => {
   const winnerStatus = await getWinnerStatus(id);
 
   if (winnerStatus === 404) {
@@ -163,55 +133,4 @@ export const saveWinner = async ({
       time: time < winner.time ? time : winner.time,
     });
   }
-};
-
-const models = [
-  'Tesla',
-  'Mercedes',
-  'BMW',
-  'Toyota',
-  'Volvo',
-  'Nissan',
-  'Opel',
-  'Aston Martin',
-  'Porsche',
-];
-
-const names = [
-  'Model S',
-  'CLK',
-  '7',
-  'Camry',
-  'Sonata',
-  '9',
-  'Transit',
-  'DB9',
-  'Cayman',
-];
-
-const getRandomName = () => {
-  const model = models[Math.floor(Math.random() * models.length)];
-  const name = names[Math.floor(Math.random() * models.length)];
-
-  return `${model} ${name}`;
-};
-
-const getRandomColor = () => {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i += 1) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-
-  return color;
-};
-
-export const generateRandomCars = (count = 100): CarsBody[] => {
-  const result = [];
-
-  for (let i = count; i > 0; i -= 1) {
-    result.push({ name: getRandomName(), color: getRandomColor() });
-  }
-
-  return result;
 };

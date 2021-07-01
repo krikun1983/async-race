@@ -2,18 +2,6 @@
   padding-left: 10px;
 }
 
-h2 {
-  font-size: 30px;
-  line-height: 36px;
-  font-weight: bold;
-}
-
-h3 {
-  font-size: 20px;
-  line-height: 24px;
-  font-weight: bold;
-}
-
 .garage__list {
   list-style: none;
   padding: 0;
@@ -23,37 +11,6 @@ h3 {
 .general-buttons {
   display: flex;
   align-items: center;
-}
-
-.button {
-  cursor: pointer;
-  margin-right: 10px;
-  height: 25px;
-  width: 25px;
-  font-size: 15px;
-  line-height: 15px;
-  letter-spacing: 0.25px;
-  background: none;
-  border: 2px red solid;
-  border-radius: 8px;
-}
-
-.select-button {
-  color: green;
-  border-color: green;
-
-  &:after {
-    content: '✔';
-  }
-}
-
-.remove-button {
-  color: green;
-  border-color: green;
-
-  &:after {
-    content: '✘';
-  }
 }
 
 .garage__list li {
@@ -107,6 +64,24 @@ h3 {
   margin-right: 10px;
   height: 25px;
   width: 25px;
+}
+
+.select-button {
+  color: green;
+  border-color: green;
+
+  &:after {
+    content: '✔';
+  }
+}
+
+.remove-button {
+  color: green;
+  border-color: green;
+
+  &:after {
+    content: '✘';
+  }
 }
 
 .btn-icon-enable {

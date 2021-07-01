@@ -10,6 +10,6 @@ insert_final_newline = true #Перенос строки автоматичес�
 [*.{js,ts}]
 quote_type = single
 [*.md]
-trim_trailing_whitespace = false
+trim_trailing_whitespace = true
 [*.json]
-insert_final_newline = false # в конце файла должна быть пустая строка
+insert_final_newline = true # в конце файла должна быть пустая строка

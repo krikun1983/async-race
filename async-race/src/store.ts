@@ -10,9 +10,8 @@ import {
   updateWinner,
 } from './app.api';
 import ViewPage from './constants/view-page';
-import WinnersSortCars from './constants/winners-sort-cars';
-import WinnersSortOrderCars from './constants/winners-sort-order-cars';
 import { CarsBody, Store, WinnerBody } from './type';
+import { WinnersSortCars, WinnersSortOrderCars } from './constants/winners-sorts';
 
 const store: Store = {
   carsPage: 1,
@@ -31,12 +30,12 @@ const store: Store = {
     await deleteCar(id);
     await this.getCars();
   },
-  async createCar(body: CarsBody) {
-    await createCar(body);
+  async createCar(bodyCar: CarsBody) {
+    await createCar(bodyCar);
     await this.getCars();
   },
-  async updateCar(id: number, body: CarsBody) {
-    await updateCar(id, body);
+  async updateCar(id: number, bodyCar: CarsBody) {
+    await updateCar(id, bodyCar);
     await this.getCars();
   },
   async getWinners() {
@@ -57,12 +56,12 @@ const store: Store = {
     await deleteWinner(id);
     await this.getWinners();
   },
-  async createWinner(body: WinnerBody) {
-    await createWinner(body);
+  async createWinner(bodyCar: WinnerBody) {
+    await createWinner(bodyCar);
     await this.getWinners();
   },
-  async updateWinner(id: number, body: WinnerBody) {
-    await updateWinner(id, body);
+  async updateWinner(id: number, bodyCar: WinnerBody) {
+    await updateWinner(id, bodyCar);
     await this.getWinners();
   },
   sortBy: WinnersSortCars.wins,

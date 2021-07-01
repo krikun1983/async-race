@@ -14,9 +14,9 @@ export default class Header extends BaseComponent {
   }
 
   private static renderHeading() {
-    const h1 = new BaseComponent('h1', ['h1']);
-    h1.element.innerHTML = 'Async-Rase-Task';
-    return h1.element;
+    const title = new BaseComponent('h1', ['title']);
+    title.element.innerHTML = 'Async-Rase-Task';
+    return title.element;
   }
 
   static pageHidden(): void {

@@ -1,17 +1,10 @@
 import BaseComponent from '../../base-components';
-import {
-  drive,
-  generateRandomCars,
-  getCar,
-  getWinner,
-  getWinnerStatus,
-  startEngine,
-  stopEngine,
-} from '../../../app.api';
+import { drive, getCar, getWinner, getWinnerStatus, startEngine, stopEngine } from '../../../app.api';
 import store from '../../../store';
 import { AnimationCar, Car, GarageCar, WinnerBody } from '../../../type';
 import ViewPage from '../../../constants/view-page';
 import './garage.scss';
+import { animation, generateRandomCars, getDistanceBetweenElements } from '../../../app.utils';
 
 const animationCar: AnimationCar = {
   animation: {},
@@ -50,15 +43,10 @@ export default class Garage extends BaseComponent {
       C498.515,390.714,482.747,406.48,463.367,406.48z"/>
   </g></svg>`;
 
-  private renderCar = ({
-    id,
-    name,
-    color,
-    isEngineStarted = true,
-  }: GarageCar): string => `
+  private renderCar = ({ id, name, color, isEngineStarted = true }: GarageCar): string => `
     <div class="general-buttons">
-      <button class="button select-button" id="select-car-${id}"></button>
-      <button class="button remove-button" id="remove-car-${id}"></button>
+      <button class="btn-icon select-button" id="select-car-${id}"></button>
+      <button class="btn-icon remove-button" id="remove-car-${id}"></button>
       <span class="car-name">${name}</span>
     </div>
     <div class="road">
@@ -86,59 +74,9 @@ export default class Garage extends BaseComponent {
     </ul>
   `;
 
-  private getPositionAtCenter = (
-    element: HTMLElement,
-  ): { x: number; y: number } => {
-    const { top, left, width, height } = element.getBoundingClientRect();
-    return {
-      x: left + width / 2,
-      y: top + height / 2,
-    };
-  };
-
-  private getDistanceBetweenElements = (a: HTMLElement, b: HTMLElement) => {
-    const aPosition = this.getPositionAtCenter(a);
-    const bPosition = this.getPositionAtCenter(b);
-
-    return Math.hypot(aPosition.x - bPosition.x, aPosition.y - bPosition.y);
-  };
-
-  private animation = (
-    car: HTMLDivElement,
-    distance: number,
-    animationTime: number,
-  ): { id: number } => {
-    let start: number | null = null;
-    const state: {
-      id: number;
-    } = { id: 1 };
-
-    const step = (timestamp: number) => {
-      if (!start) start = timestamp;
-      const time = timestamp - start;
-      const passed = Math.round(time * (distance / animationTime));
-      const carStyleTransform = car;
-      carStyleTransform.style.transform = `translateX(${Math.min(
-        passed,
-        distance,
-      )}px)`;
-
-      if (passed < distance) {
-        state.id = window.requestAnimationFrame(step);
-      }
-    };
-    state.id = window.requestAnimationFrame(step);
-
-    return state;
-  };
-
   private startDriving = async (id: number) => {
-    const btnStart = document.getElementById(
-      `start-engine-car-${id}`,
-    ) as HTMLButtonElement;
-    const btnStop = document.getElementById(
-      `stop-engine-car-${id}`,
-    ) as HTMLButtonElement;
+    const btnStart = document.getElementById(`start-engine-car-${id}`) as HTMLButtonElement;
+    const btnStop = document.getElementById(`stop-engine-car-${id}`) as HTMLButtonElement;
 
     btnStart.setAttribute('disabled', '');
     btnStart.classList.toggle('enabling', true);
@@ -152,9 +90,8 @@ export default class Garage extends BaseComponent {
     const car = document.getElementById(`car-${id}`) as HTMLDivElement;
     const flag = document.getElementById(`flag-${id}`) as HTMLDivElement;
     if (car && flag) {
-      const htmlDistance =
-        Math.floor(this.getDistanceBetweenElements(car, flag)) + 10;
-      animationCar.animation[id] = this.animation(car, htmlDistance, time);
+      const htmlDistance = Math.floor(getDistanceBetweenElements(car, flag)) + 10;
+      animationCar.animation[id] = animation(car, htmlDistance, time);
     }
 
     const { success } = await drive(id);
@@ -164,24 +101,16 @@ export default class Garage extends BaseComponent {
   };
 
   private stopDriving = async (id: number) => {
-    const btnStart = document.getElementById(
-      `start-engine-car-${id}`,
-    ) as HTMLButtonElement;
-    const btnStop = document.getElementById(
-      `stop-engine-car-${id}`,
-    ) as HTMLButtonElement;
-
+    const btnStart = document.getElementById(`start-engine-car-${id}`) as HTMLButtonElement;
+    const btnStop = document.getElementById(`stop-engine-car-${id}`) as HTMLButtonElement;
     const car = document.getElementById(`car-${id}`) as HTMLDivElement;
-
     btnStop.setAttribute('disabled', '');
     btnStop.classList.toggle('enabling', true);
     await stopEngine(id);
     btnStop.classList.toggle('enabling', false);
     btnStart.removeAttribute('disabled');
     car.style.transform = 'translateX(0)';
-
-    if (animationCar.animation[id])
-      window.cancelAnimationFrame(animationCar.animation[id].id);
+    if (animationCar.animation[id]) window.cancelAnimationFrame(animationCar.animation[id].id);
   };
 
   updateStateGarage = async (): Promise<void> => {
@@ -206,171 +135,245 @@ export default class Garage extends BaseComponent {
     });
   };
 
-  listen(): void {
-    document.body.addEventListener(
-      'click',
-      async (event: Event): Promise<void> => {
-        const btnEvent = event.target as HTMLButtonElement;
-        const btnUpdate = document.getElementById(
-          'update-submit',
-        ) as HTMLButtonElement;
-        const btnReset = document.querySelector(
-          '.btn-reset',
-        ) as HTMLButtonElement;
-        const btnCreate = document.querySelector(
-          '.btn-create',
-        ) as HTMLButtonElement;
-        const btnGenerate = document.querySelector(
-          '.btn-generate',
-        ) as HTMLButtonElement;
-        const btnRace = document.querySelector(
-          '.btn-race',
-        ) as HTMLButtonElement;
-        const btnNext = document.querySelector(
-          '.button-next',
-        ) as HTMLButtonElement;
-
-        const createNameInput = document.querySelector(
-          '.create-name',
-        ) as HTMLInputElement;
-        const createColorInput = document.querySelector(
-          '.create-color',
-        ) as HTMLInputElement;
-        const updateNameInput = document.getElementById(
-          'update-name',
-        ) as HTMLInputElement;
-        const updateColorInput = document.getElementById(
-          'update-color',
-        ) as HTMLInputElement;
-
-        const garagePage = document.querySelector('.garage') as HTMLDivElement;
-        const resultRace = document.querySelector('.result') as HTMLDivElement;
-
-        if (btnEvent.classList.contains('start-engine-button')) {
-          const id = +btnEvent.id.split('start-engine-car-')[1];
-          this.startDriving(id);
-        } else if (btnEvent.classList.contains('stop-engine-button')) {
-          const id = +btnEvent.id.split('stop-engine-car-')[1];
-          this.stopDriving(id);
-        } else if (btnEvent.classList.contains('select-button')) {
-          selectedCar = await getCar(+btnEvent.id.split('select-car-')[1]);
-          updateNameInput.value = selectedCar.name;
-          updateColorInput.value = selectedCar.color;
-          updateNameInput.removeAttribute('disabled');
-          updateColorInput.removeAttribute('disabled');
-          this.disabledRemove(btnUpdate);
-        } else if (btnEvent.classList.contains('remove-button')) {
-          const id = +btnEvent.id.split('remove-car-')[1];
-          this.element.innerHTML = '';
-          await store.deleteCar(id);
-          await store.deleteWinner(id);
-          await this.updateStateGarage();
-          garagePage.innerHTML = this.renderGarage();
-        } else if (btnEvent.classList.contains('btn-winners-view')) {
-          store.cars.map(({ id }) => this.stopDriving(id));
-          this.disabledAdd(btnReset);
-          this.disabledRemove(btnGenerate, btnCreate, btnRace, btnNext);
-          resultRace.innerHTML = '';
-        } else if (btnEvent.classList.contains('btn-garage-view')) {
-          await this.updateStateGarage();
-        } else if (btnEvent.classList.contains('btn-race')) {
-          this.disabledAdd(btnEvent, btnGenerate, btnCreate);
-          this.disabledRemove(btnReset);
-          const promises = store.cars.map(({ id }) => this.startDriving(id));
-          const result = await Promise.all(promises);
-          let resultMin = 10000;
-          let carWinner = 0;
-          result.forEach(elem => {
-            if (elem.success) {
-              if (resultMin >= elem.time) {
-                resultMin = elem.time;
-                carWinner = elem.id;
-              }
-            }
-          });
-
-          winner = store.cars.find(car => car.id === carWinner);
-          if (!winner) {
-            return;
-          }
-          const time = +(resultMin / 1000).toFixed(2);
-
-          const winnerSave: WinnerBody = {
-            id: winner.id,
-            wins: 1,
-            time,
-          };
-
-          resultRace.innerHTML = `Win <span>${winner.name}</span>. His time <span>${winnerSave.time}</span> сек`;
-          const winnerStatus = await getWinnerStatus(winnerSave.id);
-          if (winnerStatus === 404) {
-            await store.createWinner(winnerSave);
-          } else {
-            const winnerUpdate = await getWinner(winnerSave.id);
-            await store.updateWinner(winnerSave.id, {
-              id: winnerSave.id,
-              wins: winnerUpdate.wins + 1,
-              time: time < winnerUpdate.time ? time : winnerUpdate.time,
-            });
-          }
-          await this.updateStateGarage();
-        } else if (btnEvent.classList.contains('btn-reset')) {
-          this.disabledAdd(btnEvent);
-          store.cars.map(({ id }) => this.stopDriving(id));
-          this.disabledRemove(btnGenerate, btnCreate, btnRace);
-          resultRace.innerHTML = '';
-        } else if (
-          (event.target as HTMLElement).classList.contains('btn-update')
-        ) {
-          if (updateNameInput.value && updateColorInput.value) {
-            const car = {
-              name: updateNameInput.value,
-              color: updateColorInput.value,
-            };
-            this.element.innerHTML = '';
-            await store.updateCar(selectedCar.id, car);
-            garagePage.innerHTML = this.renderGarage();
-            updateNameInput.value = '';
-            updateNameInput.setAttribute('disabled', '');
-            updateColorInput.setAttribute('disabled', '');
-            this.disabledAdd(btnUpdate);
-            updateColorInput.value = '#ffffff';
-          }
-        } else if (btnEvent.classList.contains('btn-create')) {
-          const car = {
-            name: createNameInput.value,
-            color: createColorInput.value,
-          };
-          this.element.innerHTML = '';
-          await store.createCar(car);
-          garagePage.innerHTML = this.renderGarage();
-          createNameInput.value = '';
-          createColorInput.value = '#ffffff';
-        } else if (btnEvent.classList.contains('btn-generate')) {
-          this.disabledAdd(btnEvent);
-          this.element.innerHTML = '';
-          const cars = generateRandomCars(100);
-
-          await Promise.all(cars.map(async c => store.createCar(c)));
-          await this.updateStateGarage();
-          garagePage.innerHTML = this.renderGarage();
-          this.disabledRemove(btnEvent);
-        } else if (btnEvent.classList.contains('button-next')) {
-          if (store.view === ViewPage.garage) {
-            this.element.innerHTML = '';
-            store.carsPage += 1;
-            await this.updateStateGarage();
-            garagePage.innerHTML = this.renderGarage();
-          }
-        } else if (btnEvent.classList.contains('button-prev')) {
-          if (store.view === ViewPage.garage) {
-            this.element.innerHTML = '';
-            store.carsPage -= 1;
-            await this.updateStateGarage();
-            garagePage.innerHTML = this.renderGarage();
-          }
+  private raceCarsBtn = async () => {
+    const resultRace = document.querySelector('.result') as HTMLDivElement;
+    const promises = store.cars.map(({ id }) => this.startDriving(id));
+    const result = await Promise.all(promises);
+    let resultMin = 10000;
+    let carWinner = 0;
+    result.forEach(elem => {
+      if (elem.success) {
+        if (resultMin >= elem.time) {
+          resultMin = elem.time;
+          carWinner = elem.id;
         }
-      },
-    );
+      }
+    });
+    winner = store.cars.find(car => car.id === carWinner);
+    if (!winner) {
+      return;
+    }
+    const time = +(resultMin / 1000).toFixed(2);
+    const winnerSave: WinnerBody = {
+      id: winner.id,
+      wins: 1,
+      time,
+    };
+    resultRace.innerHTML = `Win <span>${winner.name}</span>. His time <span>${winnerSave.time}</span> сек`;
+    const winnerStatus = await getWinnerStatus(winnerSave.id);
+    if (winnerStatus === 404) {
+      await store.createWinner(winnerSave);
+    } else {
+      const winnerUpdate = await getWinner(winnerSave.id);
+      await store.updateWinner(winnerSave.id, {
+        id: winnerSave.id,
+        wins: winnerUpdate.wins + 1,
+        time: time < winnerUpdate.time ? time : winnerUpdate.time,
+      });
+    }
+    await this.updateStateGarage();
+  };
+
+  private initVariableButton = () => {
+    const btnUpdate = document.getElementById('update-submit') as HTMLButtonElement;
+    const btnReset = document.querySelector('.btn-reset') as HTMLButtonElement;
+    const btnCreate = document.querySelector('.btn-create') as HTMLButtonElement;
+    const btnGenerate = document.querySelector('.btn-generate') as HTMLButtonElement;
+    const btnRace = document.querySelector('.btn-race') as HTMLButtonElement;
+    const btnNext = document.querySelector('.button-next') as HTMLButtonElement;
+    return [btnUpdate, btnReset, btnCreate, btnGenerate, btnRace, btnNext];
+  };
+
+  private initVariableInput = () => {
+    const createNameInput = document.querySelector('.create-name') as HTMLInputElement;
+    const createColorInput = document.querySelector('.create-color') as HTMLInputElement;
+    const updateNameInput = document.querySelector('.update-name') as HTMLInputElement;
+    const updateColorInput = document.querySelector('.update-color') as HTMLInputElement;
+    return [createNameInput, createColorInput, updateNameInput, updateColorInput];
+  };
+
+  private initVariablePage = () => {
+    const garagePage = document.querySelector('.garage') as HTMLDivElement;
+    const resultRace = document.querySelector('.result') as HTMLDivElement;
+    return [garagePage, resultRace];
+  };
+
+  private selectCarBtn = async (
+    btnEvent: HTMLButtonElement,
+    btnUpdate: HTMLButtonElement,
+    nameInput: HTMLInputElement,
+    colorInput: HTMLInputElement,
+  ) => {
+    selectedCar = await getCar(+btnEvent.id.split('select-car-')[1]);
+    nameInput.removeAttribute('disabled');
+    colorInput.removeAttribute('disabled');
+    const newNameInput = nameInput;
+    newNameInput.value = selectedCar.name;
+    const newColorInput = colorInput;
+    newColorInput.value = selectedCar.color;
+    this.disabledRemove(btnUpdate);
+  };
+
+  private removeCarBtn = async (btnEvent: HTMLButtonElement, garagePage: HTMLDivElement) => {
+    const id = +btnEvent.id.split('remove-car-')[1];
+    this.element.innerHTML = '';
+    await store.deleteCar(id);
+    await store.deleteWinner(id);
+    await this.updateStateGarage();
+    const newGaragePage = garagePage;
+    newGaragePage.innerHTML = this.renderGarage();
+  };
+
+  private updateCarBtn = async (
+    nameInput: HTMLInputElement,
+    colorInput: HTMLInputElement,
+    garagePage: HTMLDivElement,
+    btnUpdate: HTMLButtonElement,
+  ) => {
+    if (nameInput.value && colorInput.value) {
+      const car = {
+        name: nameInput.value,
+        color: colorInput.value,
+      };
+      this.element.innerHTML = '';
+      await store.updateCar(selectedCar.id, car);
+      const newGaragePage = garagePage;
+      const newNameInput = nameInput;
+      const newColorInput = colorInput;
+      newGaragePage.innerHTML = this.renderGarage();
+      newNameInput.value = '';
+      newNameInput.setAttribute('disabled', '');
+      newColorInput.setAttribute('disabled', '');
+      this.disabledAdd(btnUpdate);
+      newColorInput.value = '#ffffff';
+    }
+  };
+
+  private createCarBtn = async (
+    nameInput: HTMLInputElement,
+    colorInput: HTMLInputElement,
+    garagePage: HTMLDivElement,
+  ) => {
+    const car = {
+      name: nameInput.value,
+      color: colorInput.value,
+    };
+    this.element.innerHTML = '';
+    await store.createCar(car);
+    const newGaragePage = garagePage;
+    const newNameInput = nameInput;
+    const newColorInput = colorInput;
+    newGaragePage.innerHTML = this.renderGarage();
+    newNameInput.value = '';
+    newColorInput.value = '#ffffff';
+  };
+
+  private generateCarBtn = async (btnEvent: HTMLButtonElement, garagePage: HTMLDivElement) => {
+    this.disabledAdd(btnEvent);
+    this.element.innerHTML = '';
+    const cars = generateRandomCars(100);
+    await Promise.all(cars.map(async c => store.createCar(c)));
+    await this.updateStateGarage();
+    const newGaragePage = garagePage;
+    newGaragePage.innerHTML = this.renderGarage();
+    this.disabledRemove(btnEvent);
+  };
+
+  private nextPageCarBTN = async (garagePage: HTMLDivElement) => {
+    if (store.view === ViewPage.garage) {
+      this.element.innerHTML = '';
+      store.carsPage += 1;
+      await this.updateStateGarage();
+      const newGaragePage = garagePage;
+      newGaragePage.innerHTML = this.renderGarage();
+    }
+  };
+
+  private prevPageCarBTN = async (garagePage: HTMLDivElement) => {
+    if (store.view === ViewPage.garage) {
+      this.element.innerHTML = '';
+      store.carsPage += 1;
+      await this.updateStateGarage();
+      const newGaragePage = garagePage;
+      newGaragePage.innerHTML = this.renderGarage();
+    }
+  };
+
+  private raceCarBtn = (
+    btnEvent: HTMLButtonElement,
+    btnGenerate: HTMLButtonElement,
+    btnCreate: HTMLButtonElement,
+    btnReset: HTMLButtonElement,
+  ) => {
+    this.disabledAdd(btnEvent, btnGenerate, btnCreate);
+    this.disabledRemove(btnReset);
+    this.raceCarsBtn();
+  };
+
+  private resetCarBtn = (
+    btnEvent: HTMLButtonElement,
+    btnGenerate: HTMLButtonElement,
+    btnCreate: HTMLButtonElement,
+    btnRace: HTMLButtonElement,
+    resultRace: HTMLDivElement,
+  ) => {
+    this.disabledAdd(btnEvent);
+    store.cars.map(({ id }) => this.stopDriving(id));
+    this.disabledRemove(btnGenerate, btnCreate, btnRace);
+    const newResultRace = resultRace;
+    newResultRace.innerHTML = '';
+  };
+
+  private viewWinnersPageBtn = (
+    btnReset: HTMLButtonElement,
+    btnGenerate: HTMLButtonElement,
+    btnCreate: HTMLButtonElement,
+    btnRace: HTMLButtonElement,
+    btnNext: HTMLButtonElement,
+    resultRace: HTMLDivElement,
+  ) => {
+    store.cars.map(({ id }) => this.stopDriving(id));
+    this.disabledAdd(btnReset);
+    this.disabledRemove(btnGenerate, btnCreate, btnRace, btnNext);
+    const newResultRace = resultRace;
+    newResultRace.innerHTML = '';
+  };
+
+  listen(): void {
+    document.body.addEventListener('click', async (event: Event): Promise<void> => {
+      const btnEvent = event.target as HTMLButtonElement;
+      const [btnUpdate, btnReset, btnCreate, btnGenerate, btnRace, btnNext] = this.initVariableButton();
+      const [createNameInput, createColorInput, updateNameInput, updateColorInput] = this.initVariableInput();
+      const [garagePage, resultRace] = this.initVariablePage();
+      if (btnEvent.classList.contains('start-engine-button')) {
+        const id = +btnEvent.id.split('start-engine-car-')[1];
+        this.startDriving(id);
+      } else if (btnEvent.classList.contains('stop-engine-button')) {
+        const id = +btnEvent.id.split('stop-engine-car-')[1];
+        this.stopDriving(id);
+      } else if (btnEvent.classList.contains('select-button')) {
+        this.selectCarBtn(btnEvent, btnUpdate, updateNameInput, updateColorInput);
+      } else if (btnEvent.classList.contains('remove-button')) {
+        this.removeCarBtn(btnEvent, garagePage);
+      } else if (btnEvent.classList.contains('btn-winners-view')) {
+        this.viewWinnersPageBtn(btnReset, btnGenerate, btnCreate, btnRace, btnNext, resultRace);
+      } else if (btnEvent.classList.contains('btn-garage-view')) {
+        await this.updateStateGarage();
+      } else if (btnEvent.classList.contains('btn-race')) {
+        this.raceCarBtn(btnEvent, btnGenerate, btnCreate, btnReset);
+      } else if (btnEvent.classList.contains('btn-reset')) {
+        this.resetCarBtn(btnEvent, btnGenerate, btnCreate, btnRace, resultRace);
+      } else if ((event.target as HTMLElement).classList.contains('btn-update')) {
+        this.updateCarBtn(updateNameInput, updateColorInput, garagePage, btnUpdate);
+      } else if (btnEvent.classList.contains('btn-create')) {
+        this.createCarBtn(createNameInput, createColorInput, garagePage);
+      } else if (btnEvent.classList.contains('btn-generate')) {
+        this.generateCarBtn(btnEvent, garagePage);
+      } else if (btnEvent.classList.contains('button-next')) {
+        this.nextPageCarBTN(garagePage);
+      } else if (btnEvent.classList.contains('button-prev')) {
+        this.prevPageCarBTN(garagePage);
+      }
+    });
   }
 }

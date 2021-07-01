@@ -7,13 +7,16 @@ import './style.scss';
 const { body } = document;
 
 window.onload = () => {
+  const garage = new Garage();
   store.getCars().then(() => {
     new App(body).render();
-    new Garage().listen();
-    new Garage().updateStateGarage();
-    store.getWinners().then(() => {
-      new Garage().renderGarage();
+    body.addEventListener('click', () => {
+      garage.listen();
+      new WinnersView().listenWinners();
     });
-    new WinnersView().listenWinners();
+    garage.updateStateGarage();
+    store.getWinners().then(() => {
+      garage.renderGarage();
+    });
   });
 };

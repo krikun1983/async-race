@@ -1,12 +1,14 @@
-import WinnersSortCars from './constants/winners-sort-cars';
-import WinnersSortOrderCars from './constants/winners-sort-order-cars';
+import {
+  WinnersSortCars,
+  WinnersSortOrderCars,
+} from './constants/winners-sorts';
 
 export type WinnersSort = WinnersSortCars.wins | WinnersSortCars.time;
 
 export type WinnersOrder = WinnersSortOrderCars.asc | WinnersSortOrderCars.desc;
 
 export type Winner = {
-  car: { name: string; color: string; id: number };
+  car: Car;
   id: number;
   wins: number;
   time: number;
@@ -57,12 +59,6 @@ export type GarageCar = {
   name: string;
   color: string;
   isEngineStarted?: boolean;
-};
-
-export type UpdateCar = {
-  id: number;
-  name: string;
-  color: string;
 };
 
 export type Store = {
