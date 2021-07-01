@@ -9,21 +9,14 @@ export default class Menu extends BaseComponent {
   }
 
   private static renderButtonToGarage() {
-    const button = new BaseComponent('button', [
-      'btn-controls',
-      'btn-garage-view',
-      'btn-menu-active',
-    ]);
+    const button = new BaseComponent('button', ['btn-controls', 'btn-garage-view', 'btn-menu-active']);
     button.element.innerHTML = 'to garage';
     button.element.setAttribute('id', 'garage-view');
     return button.element;
   }
 
   private static renderButtonToWinners() {
-    const button = new BaseComponent('button', [
-      'btn-controls',
-      'btn-winners-view',
-    ]);
+    const button = new BaseComponent('button', ['btn-controls', 'btn-winners-view']);
     button.element.innerHTML = 'to winners';
     button.element.setAttribute('id', 'winners-view');
     return button.element;

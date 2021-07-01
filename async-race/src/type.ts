@@ -1,7 +1,4 @@
-import {
-  WinnersSortCars,
-  WinnersSortOrderCars,
-} from './constants/winners-sorts';
+import { WinnersSortCars, WinnersSortOrderCars } from './constants/winners-sorts';
 
 export type WinnersSort = WinnersSortCars.wins | WinnersSortCars.time;
 
